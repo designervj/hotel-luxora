@@ -106,10 +106,8 @@ export default function NearbyPage() {
                     </p>
                 </div>
 
-                <div style={{ 
+                <div className="nearby-page-grid" style={{ 
                     display: "grid", 
-                    gridTemplateColumns: "1.2fr 1fr", 
-                    gap: "60px", 
                     alignItems: "start" 
                 }}>
                     {/* Left: Accordion */}
@@ -220,9 +218,15 @@ export default function NearbyPage() {
                     to { opacity: 1; transform: translateX(0); }
                 }
 
+                .nearby-page-grid {
+                    grid-template-columns: 1.2fr 1fr;
+                    gap: 60px;
+                }
+
                 @media (max-width: 1024px) {
-                    .max-w {
+                    .nearby-page-grid {
                         grid-template-columns: 1fr !important;
+                        gap: 40px !important;
                     }
                     div[style*="position: sticky"] {
                         position: relative !important;

@@ -19,7 +19,7 @@ export default function VelourFooter() {
 
       <div style={{ maxWidth: "1400px", margin: "0 auto", padding: "0 40px", position: "relative", zIndex: 2 }}>
         
-        <div style={{ display: "grid", gridTemplateColumns: "1.5fr 1fr 1.2fr 1.5fr", gap: "60px", marginBottom: "60px" }}>
+        <div className="vf-grid" style={{ display: "grid", gridTemplateColumns: "1.5fr 1fr 1.2fr 1.5fr", gap: "60px", marginBottom: "60px" }}>
 
           {/* COLUMN 1: Logo & Description */}
           <div>
@@ -128,14 +128,23 @@ export default function VelourFooter() {
       {/* Mobile Styles embedded */}
       <style>{`
         @media (max-width: 1024px) {
-          footer > div > div:first-of-type {
-            grid-template-columns: 1fr 1fr;
+          .vf-grid {
+            grid-template-columns: 1fr 1fr !important;
           }
         }
         @media (max-width: 768px) {
-          footer > div > div:first-of-type {
-            grid-template-columns: 1fr;
-            gap: 40px;
+          .vf-grid {
+            grid-template-columns: 1fr !important;
+            gap: 40px !important;
+          }
+          footer {
+            padding-top: 50px !important;
+            padding-bottom: 20px !important;
+          }
+          #footer-legal-links {
+            flex-direction: column;
+            align-items: flex-start !important;
+            gap: 12px !important;
           }
         }
       `}</style>

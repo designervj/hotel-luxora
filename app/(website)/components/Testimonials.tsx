@@ -113,14 +113,17 @@ export default function Testimonials({ data, eyebrow, title, titleEm }: {
         </div>
 
         <div
-          className="testi-card"
+          className="testi-card testi-card-responsive"
           style={{
             opacity: fade ? 1 : 0,
             transform: fade ? "translateY(0)" : "translateY(10px)",
-            transition: "opacity 0.3s, transform 0.3s",
-            padding: "40px 60px"
+            transition: "opacity 0.3s, transform 0.3s"
           }}
         >
+          <style>{`
+            .testi-card-responsive { padding: 40px 60px; }
+            @media (max-width: 768px) { .testi-card-responsive { padding: 40px 20px; } }
+          `}</style>
           <div className="stars" style={{ marginBottom: 20 }}>
             {Array.from({ length: t.rating || 5 }).map((_, i) => (
                <span key={i} className="star">★</span>

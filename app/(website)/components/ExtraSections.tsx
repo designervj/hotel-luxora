@@ -93,8 +93,7 @@ export function DiningSection() {
     <section id="dining" style={{ padding: "112px 0", background: "#051E26", position: "relative" }}>
       <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: "2px", background: "linear-gradient(to right, transparent, var(--gold), transparent)" }}></div>
       <div className="max-w" style={{ maxWidth: "1400px", margin: "0 auto", padding: "0 40px" }}>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "80px", alignItems: "center" }}>
-          
+        <div className="es-dining-grid" style={{ display: "grid", gap: "80px", alignItems: "center" }}>
           <div style={{ position: "relative" }}>
             <div style={{ position: "absolute", top: "-20px", left: "-20px", bottom: "20px", right: "20px", border: "1px solid rgba(213,168,87,0.3)" }}></div>
             <img src="https://images.unsplash.com/photo-1585937421612-70a008356fbe?auto=format&fit=crop&q=80" alt="Fine Dining" style={{ width: "100%", height: "600px", objectFit: "cover", position: "relative", zIndex: 2 }} onError={(e) => { e.currentTarget.src = "/default-hotel.png"; e.currentTarget.onerror = null; }} />
@@ -138,7 +137,7 @@ export function EventsSection() {
           </h2>
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "24px" }}>
+        <div className="es-events-grid" style={{ display: "grid", gap: "24px" }}>
           {[
             { title: "Grand Weddings", img: "https://images.unsplash.com/photo-1583089892943-e02e5bbce8f4?auto=format&fit=crop&q=80" },
             { title: "Corporate Meetings", img: "https://images.unsplash.com/photo-1544644181-1484b3fdfc62?auto=format&fit=crop&q=80" },
@@ -156,6 +155,18 @@ export function EventsSection() {
         </div>
 
       </div>
+      <style>{`
+        .es-events-grid { grid-template-columns: repeat(3, 1fr); }
+        .es-dining-grid { grid-template-columns: 1fr 1fr; }
+        @media (max-width: 1024px) {
+          .es-events-grid { grid-template-columns: repeat(2, 1fr) !important; }
+          .es-dining-grid { gap: 40px !important; }
+        }
+        @media (max-width: 768px) {
+          .es-events-grid { grid-template-columns: 1fr !important; }
+          .es-dining-grid { grid-template-columns: 1fr !important; gap: 40px !important; }
+        }
+      `}</style>
     </section>
   );
 }
