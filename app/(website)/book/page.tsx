@@ -333,7 +333,7 @@ function BookingForm() {
     return (
         <>
         <style dangerouslySetInnerHTML={{ __html: BOOK_STYLES }} />
-        <div style={{ background: "var(--midnight)", minHeight: "100vh", paddingTop: "max(120px, 10vh)", paddingBottom: 112 }}>
+        <div style={{ background: "var(--midnight)", minHeight: "100vh", paddingTop: "max(160px, 15vh)", paddingBottom: 112 }}>
             <div className="max-w">
                 
                 {/* ── Step Indicator ── */}

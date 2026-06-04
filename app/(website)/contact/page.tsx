@@ -2,6 +2,31 @@
 import React, { useEffect, useState } from "react";
 import { Hotel } from "../../components/types";
 
+function ContactHero() {
+    return (
+        <section className="hero" style={{ minHeight: "65vh", paddingBottom: 0 }}>
+            <div className="hero-bg" style={{ backgroundImage: "url('/default-hotel.png')", opacity: 1, zIndex: 0 }} />
+            <div className="hero-grad1" style={{ zIndex: 1 }} />
+            <div className="hero-grad2" style={{ zIndex: 1 }} />
+            
+            <div className="hero-inner" style={{ paddingBottom: 80, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <div className="hero-content fade-in-up visible" style={{ maxWidth: 800, margin: "0 auto", textAlign: "center" }}>
+                    <div className="hero-eyebrow" style={{ justifyContent: "center", marginBottom: 24 }}>
+                        <div className="eyebrow-line" style={{ width: 40 }} />
+                        <span className="eyebrow-text" style={{ letterSpacing: "0.2em" }}>RESERVATIONS</span>
+                        <div className="eyebrow-line" style={{ width: 40 }} />
+                    </div>
+                    <h1 className="hero-headline font-display" style={{ fontSize: "clamp(48px, 8vw, 84px)", lineHeight: 1.1 }}>
+                        Get In <br/><em>Touch</em>
+                    </h1>
+                    <p className="fade-in-up visible" style={{ color: "var(--ivory-dim)", marginTop: 24, fontSize: 16, maxWidth: 600, margin: "24px auto 0", lineHeight: 1.8 }}>
+                        Our dedicated hospitality team is available 24/7 to assist with your reservations and ensure your journey to Jaipur is seamless.
+                    </p>
+                </div>
+            </div>
+        </section>
+    );
+}
 export default function ContactPage() {
     const [hotel, setHotel] = useState<Hotel | null>(null);
     const [formSent, setFormSent] = useState(false);
@@ -32,24 +57,12 @@ export default function ContactPage() {
     };
 
     return (
-        <div style={{ background: "var(--midnight)", minHeight: "100vh", paddingTop: 160, paddingBottom: 112 }}>
-            <div className="max-w">
-                {/* Header Section */}
-                <div style={{ textAlign: "center", marginBottom: 80 }}>
-                    <div className="section-eyebrow fade-in-up" style={{ justifyContent: "center" }}>
-                        <span className="line"></span>
-                        <span>Reservations</span>
-                        <span className="line"></span>
-                    </div>
-                    <h1 className="section-title fade-in-up" style={{ fontSize: "clamp(40px, 8vw, 84px)" }}>
-                        Get In <em>Touch</em>
-                    </h1>
-                    <p className="fade-in-up" style={{ color: "var(--ivory-dim)", marginTop: 24, fontSize: 15, maxWidth: 600, margin: "24px auto 0", lineHeight: 1.8 }}>
-                        Our dedicated hospitality team is available 24/7 to assist with your reservations and ensure your journey to Jaipur is seamless.
-                    </p>
-                </div>
-
-                {/* Contact Content Grid */}
+        <div style={{ background: "var(--midnight)", minHeight: "100vh" }}>
+            <ContactHero />
+            
+            <div style={{ paddingTop: 112, paddingBottom: 112 }}>
+                <div className="max-w">
+                    {/* Contact Content Grid */}
                 <div className="contact-grid">
                     <div>
                         <div className="section-eyebrow fade-in-up">
@@ -133,6 +146,7 @@ export default function ContactPage() {
                             )}
                         </div>
                     </div>
+                </div>
                 </div>
             </div>
         </div>

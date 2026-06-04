@@ -46,11 +46,17 @@ export default function VelourFooter() {
           <div>
             <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "22px", color: "var(--ivory)", fontWeight: "400", marginBottom: "24px" }}>Explore</div>
             <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "16px" }}>
-              {["About Us", "Our Rooms", "Fine Dining", "Weddings & Events", "Gallery"].map(link => (
-                <li key={link}>
-                  <Link href={`/${link.toLowerCase().replace(/ /g, '-').replace('&', 'and')}`} style={{ fontSize: "14px", color: "var(--ivory-dim)", textDecoration: "none", transition: "all 0.2s", display: "inline-flex", alignItems: "center", gap: "8px" }} onMouseEnter={(e) => { e.currentTarget.style.color = "var(--gold)"; e.currentTarget.style.transform = "translateX(4px)"; }} onMouseLeave={(e) => { e.currentTarget.style.color = "var(--ivory-dim)"; e.currentTarget.style.transform = "translateX(0)"; }}>
+              {[
+                { label: "Home", href: "/" },
+                { label: "About", href: "/about" },
+                { label: "Nearby", href: "/nearby" },
+                { label: "Contact", href: "/contact" },
+                { label: "Gallery", href: "/gallery" }
+              ].map(link => (
+                <li key={link.label}>
+                  <Link href={link.href} style={{ fontSize: "14px", color: "var(--ivory-dim)", textDecoration: "none", transition: "all 0.2s", display: "inline-flex", alignItems: "center", gap: "8px" }} onMouseEnter={(e) => { e.currentTarget.style.color = "var(--gold)"; e.currentTarget.style.transform = "translateX(4px)"; }} onMouseLeave={(e) => { e.currentTarget.style.color = "var(--ivory-dim)"; e.currentTarget.style.transform = "translateX(0)"; }}>
                     <span style={{ width: "4px", height: "4px", borderRadius: "50%", background: "var(--gold)", display: "inline-block" }}></span>
-                    {link}
+                    {link.label}
                   </Link>
                 </li>
               ))}

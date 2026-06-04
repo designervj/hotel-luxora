@@ -63,7 +63,9 @@ function TextImageSectionRender({ sec }: { sec: TextImageSection }) {
                     <div className="about-gold-bar" />
                     <div className="about-main-img fade-in-up visible">
                         {sec.image ? (
-                            <img src={sec.image} alt={sec.heading || "About"} style={{ width: "100%", height: "110%", marginTop: "-5%", objectFit: "cover" }} />
+                            <img src={sec.image} alt={sec.heading || "About"} 
+                                onError={(e) => { e.currentTarget.src = "/default-hotel.png"; }}
+                                style={{ width: "100%", height: "110%", marginTop: "-5%", objectFit: "cover" }} />
                         ) : (
                             <div style={{ width: "100%", height: "100%", background: "#1a1a1a" }} />
                         )}
@@ -109,7 +111,9 @@ function TextImageSectionRender({ sec }: { sec: TextImageSection }) {
                     <div className="about-gold-bar" />
                     <div className="about-main-img fade-in-up visible">
                         {sec.image ? (
-                            <img src={sec.image} alt={sec.heading || "About"} style={{ width: "100%", height: "110%", marginTop: "-5%", objectFit: "cover" }} />
+                            <img src={sec.image} alt={sec.heading || "About"} 
+                                onError={(e) => { e.currentTarget.src = "/default-hotel.png"; }}
+                                style={{ width: "100%", height: "110%", marginTop: "-5%", objectFit: "cover" }} />
                         ) : (
                             <div style={{ width: "100%", height: "100%", background: "#1a1a1a" }} />
                         )}
@@ -141,6 +145,39 @@ function QuoteSectionRender({ sec }: { sec: QuoteSection }) {
     );
 }
 
+// ── About Hero Component ────────────────────────────────────────────────────────
+
+function AboutHero({ title, subtitle }: { title: string, subtitle: string }) {
+    const renderTitle = (t: string) => {
+        const words = t.split(" ");
+        if (words.length <= 1) return t;
+        const lastWord = words[words.length - 1];
+        const rest = words.slice(0, -1).join(" ");
+        return <>{rest} <br/><em>{lastWord}</em></>;
+    };
+
+    return (
+        <section className="hero" style={{ minHeight: "65vh", paddingBottom: 0 }}>
+            <div className="hero-bg" style={{ backgroundImage: "url('/default-hotel.png')", opacity: 1, zIndex: 0 }} />
+            <div className="hero-grad1" style={{ zIndex: 1 }} />
+            <div className="hero-grad2" style={{ zIndex: 1 }} />
+            
+            <div className="hero-inner" style={{ paddingBottom: 80, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <div className="hero-content fade-in-up visible" style={{ maxWidth: 800, margin: "0 auto", textAlign: "center" }}>
+                    <div className="hero-eyebrow" style={{ justifyContent: "center", marginBottom: 24 }}>
+                        <div className="eyebrow-line" style={{ width: 40 }} />
+                        <span className="eyebrow-text" style={{ letterSpacing: "0.2em" }}>{subtitle}</span>
+                        <div className="eyebrow-line" style={{ width: 40 }} />
+                    </div>
+                    <h1 className="hero-headline font-display" style={{ fontSize: "clamp(48px, 8vw, 84px)", lineHeight: 1.1 }}>
+                        {renderTitle(title)}
+                    </h1>
+                </div>
+            </div>
+        </section>
+    );
+}
+
 // ── Main Page ─────────────────────────────────────────────────────────────────
 
 export default function AboutPage() {
@@ -159,23 +196,50 @@ export default function AboutPage() {
 
     if (loading) return <Loading />;
 
-    // Use CMS data if available and published
     const isUsing = cmsData?.isPublished && cmsData?.sections && cmsData.sections.length > 0;
     
-    if (!isUsing) {
-        return (
-            <div style={{ paddingTop: 160, paddingBottom: 112, background: "var(--midnight)", textAlign: "center", color: "var(--ivory-dim)" }}>
-                <div className="max-w">
-                    <h1 className="font-display" style={{ fontSize: "32px", marginBottom: "20px" }}>Discovering our heritage...</h1>
-                    <p>We are currently curating our story for you. Please check back shortly.</p>
-                </div>
-            </div>
-        );
-    }
+    const defaultAboutData = {
+        title: "A Legacy of Elegance",
+        subtitle: "OUR HERITAGE",
+        sections: [
+            {
+                id: "s1",
+                type: "text-image",
+                imagePosition: "left",
+                heading: "Where Luxury Meets \nHeritage",
+                description: "Since our founding, Hotel Luxora has stood as a beacon of opulence in the heart of the city. We believe that true luxury is not just about grand architecture and fine furnishings, but about the deeply personal experiences we craft for every single guest.\n\nFrom the moment you step into our grand lobby, you are embraced by a world of warmth, sophistication, and meticulous attention to detail. Every corner of our property tells a story of passion for hospitality and an unwavering commitment to excellence.",
+                highlightTerms: "true luxury, meticulous attention to detail, commitment to excellence",
+                image: "/default-hotel.png",
+                stats: [
+                    { id: "st1", value: "25+", label: "Years of Excellence" },
+                    { id: "st2", value: "340K", label: "Happy Guests" }
+                ]
+            },
+            {
+                id: "s2",
+                type: "quote",
+                eyebrow: "Our Philosophy",
+                text: "“Hospitality is not just our profession; it is our timeless tradition of welcoming the world with open arms.”",
+            },
+            {
+                id: "s3",
+                type: "text-image",
+                imagePosition: "right",
+                heading: "Uncompromising \nStandards",
+                description: "Our dedicated team works tirelessly to anticipate your needs and exceed your expectations. We source only the finest local ingredients for our award-winning restaurants, and curate bespoke wellness journeys in our world-class spa.\n\nAt Hotel Luxora, every detail is considered, every comfort provided, and every moment designed to become a cherished memory.",
+                highlightTerms: "exceed your expectations, award-winning restaurants, bespoke wellness journeys, cherished memory",
+                image: "/default-hotel.png",
+                stats: [
+                    { id: "st3", value: "5", label: "Star Ratings" },
+                    { id: "st4", value: "24/7", label: "Dedicated Service" }
+                ]
+            }
+        ]
+    };
 
-    const title = cmsData!.title || "About Us";
-    const subtitle = cmsData!.subtitle || "Our Heritage";
-    const sections = (cmsData!.sections || []) as AboutSection[];
+    const title = isUsing ? (cmsData!.title || "About Us") : defaultAboutData.title;
+    const subtitle = isUsing ? (cmsData!.subtitle || "Our Heritage") : defaultAboutData.subtitle;
+    const sections = isUsing ? (cmsData!.sections || []) as AboutSection[] : (defaultAboutData.sections as any[]);
 
     // Render the page title with italic last word (e.g. "A legacy of _excellence_")
     const renderTitle = (t: string) => {
@@ -187,21 +251,13 @@ export default function AboutPage() {
     };
 
     return (
-        <div style={{ paddingTop: 160, paddingBottom: 112, background: "var(--midnight)" }}>
-            <div className="max-w">
-                {/* Section Header */}
-                <div style={{ textAlign: "center", marginBottom: 80 }}>
-                    <div className="section-eyebrow fade-in-up visible" style={{ justifyContent: "center" }}>
-                        <span className="line" />
-                        <span>{subtitle}</span>
-                        <span className="line" />
-                    </div>
-                    <h1 className="section-title fade-in-up visible" style={{ fontSize: "clamp(40px, 8vw, 84px)" }}>
-                        {renderTitle(title)}
-                    </h1>
-                </div>
+        <div style={{ background: "var(--midnight)" }}>
+            {/* New Full-Width Hero Section */}
+            <AboutHero title={title} subtitle={subtitle} />
 
-                {/* Dynamic Sections */}
+            <div style={{ paddingTop: 112, paddingBottom: 112 }}>
+                <div className="max-w">
+                    {/* Dynamic Sections */}
                 {sections.map(sec => {
                     if (sec.type === "text-image") {
                         return <TextImageSectionRender key={sec.id} sec={sec as TextImageSection} />;
@@ -211,6 +267,7 @@ export default function AboutPage() {
                     }
                     return null;
                 })}
+                </div>
             </div>
         </div>
     );
