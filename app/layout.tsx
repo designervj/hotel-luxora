@@ -15,6 +15,11 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "HOTEL LUXORA",
   description: "Premium Hotel Experience",
+  icons: {
+    icon: "/dark-favicon1.svg",
+    shortcut: "/dark-favicon1.svg",
+    apple: "/dark-favicon1.svg",
+  },
 };
 
 export default function RootLayout({
