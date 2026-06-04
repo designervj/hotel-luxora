@@ -14,9 +14,9 @@ export const metadata: Metadata = {
   title: 'NestCraft Interiors',
   description: 'Design-led interiors and furniture storefront built with Next.js.',
   icons: {
-    icon: '/assets/Image/favicon.svg', // 👈 favicon added
-    shortcut: '/assets/Image/favicon.svg',
-    apple: '/assets/Image/favicon.svg',
+    icon: '/light-favicon.svg', // 👈 favicon added
+    shortcut: '/light-favicon.svg',
+    apple: '/light-favicon.svg',
   },
 };
 

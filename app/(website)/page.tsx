@@ -177,6 +177,7 @@ function HeroRenderer({ sec }: { sec: HeroSection }) {
                         <div style={{ flex: 1, minWidth: 0 }}>
                             <span className="booking-field-label">Check In</span>
                             <input type="date" value={checkIn} min={today} onChange={handleCheckInChange}
+                                style={{ colorScheme: "light" }}
                                 onClick={(e) => { try { (e.target as HTMLInputElement).showPicker(); } catch { } }} />
                         </div>
                     </label>
@@ -193,6 +194,7 @@ function HeroRenderer({ sec }: { sec: HeroSection }) {
                             <input type="date" value={checkOut}
                                 min={new Date(new Date(checkIn).getTime() + 86400000).toISOString().split("T")[0]}
                                 onChange={e => setCheckOut(e.target.value)}
+                                style={{ colorScheme: "light" }}
                                 onClick={(e) => { try { (e.target as HTMLInputElement).showPicker(); } catch { } }} />
                         </div>
                     </label>

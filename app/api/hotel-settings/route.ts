@@ -8,7 +8,7 @@ const DEFAULT_SETTINGS = {
     city: "Metropolis",
     country: "United Arab Emirates",
     contactNumber: "+91 63678 50548",
-    email: "reservations@hotelluxora.com",
+    email: "hello@hotelluxora.com",
     checkInTime: "15:00",
     checkOutTime: "12:00",
     starRating: 5,

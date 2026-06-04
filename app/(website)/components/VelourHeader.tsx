@@ -46,7 +46,7 @@ export default function VelourHeader() {
 
     const phone = hotel?.phone || "+91 63678 50548";
     const phoneTel = hotel?.phone || "+916367850548";
-    const email = hotel?.email || "reservations@hotelluxora.com";
+    const email = hotel?.email === "reservations@hotelluxora.com" ? "hello@hotelluxora.com" : (hotel?.email || "hello@hotelluxora.com");
 
     return (
         <>
@@ -59,7 +59,13 @@ export default function VelourHeader() {
                 
                 <div style={{ flex: 1, margin: "0 40px", overflow: "hidden", whiteSpace: "nowrap" }}>
                     <marquee scrollamount="5" style={{ display: "block" }}>
-                        ✨ Welcome to Hotel Luxora ✨ Experience the pinnacle of luxury and comfort. Book directly with us for exclusive offers and the best rates! ✨
+                        <div style={{ display: "inline-flex", alignItems: "center", gap: "8px" }}>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0L14.59 8.41L23 11L14.59 13.59L12 22L9.41 13.59L1 11L9.41 8.41L12 0Z"/></svg>
+                            <span>Welcome to Hotel Luxora</span>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0L14.59 8.41L23 11L14.59 13.59L12 22L9.41 13.59L1 11L9.41 8.41L12 0Z"/></svg>
+                            <span>Experience the pinnacle of luxury and comfort. Book directly with us for exclusive offers and the best rates!</span>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0L14.59 8.41L23 11L14.59 13.59L12 22L9.41 13.59L1 11L9.41 8.41L12 0Z"/></svg>
+                        </div>
                     </marquee>
                 </div>
 
@@ -107,12 +113,12 @@ export default function VelourHeader() {
 
                     {/* Desktop Actions */}
                     <div className="vh-actions">
-                        <a href={`tel:${phoneTel}`} className="vh-phone-link">
+                        {/* <a href={`tel:${phoneTel}`} className="vh-phone-link">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                                 <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 8.63a19.79 19.79 0 01-3.07-8.63A2 2 0 012.18 0h3a2 2 0 012 1.72c.12.96.36 1.9.72 2.81a2 2 0 01-.45 2.11L6.91 7.09a16 16 0 006 6l.55-.55a2 2 0 012.11-.45c.91.36 1.85.6 2.81.72A2 2 0 0122 16.92z" />
                             </svg>
                             <span>{phone}</span>
-                        </a>
+                        </a> */}
                         <Link href="/book" className="vh-btn-book">
                             Book Now
                             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">

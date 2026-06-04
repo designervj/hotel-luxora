@@ -97,7 +97,7 @@ export function DiningSection() {
           
           <div style={{ position: "relative" }}>
             <div style={{ position: "absolute", top: "-20px", left: "-20px", bottom: "20px", right: "20px", border: "1px solid rgba(213,168,87,0.3)" }}></div>
-            <img src="https://images.unsplash.com/photo-1585937421612-70a008356fbe?auto=format&fit=crop&q=80" alt="Fine Dining" style={{ width: "100%", height: "600px", objectFit: "cover", position: "relative", zIndex: 2 }} />
+            <img src="https://images.unsplash.com/photo-1585937421612-70a008356fbe?auto=format&fit=crop&q=80" alt="Fine Dining" style={{ width: "100%", height: "600px", objectFit: "cover", position: "relative", zIndex: 2 }} onError={(e) => { e.currentTarget.src = "/default-hotel.png"; e.currentTarget.onerror = null; }} />
           </div>
 
           <div>
@@ -145,7 +145,7 @@ export function EventsSection() {
             { title: "Private Parties", img: "https://images.unsplash.com/photo-1587595431973-160d0d94add1?auto=format&fit=crop&q=80" }
           ].map((item, idx) => (
             <div key={idx} style={{ position: "relative", height: "400px", overflow: "hidden", cursor: "pointer", group: "true" }}>
-              <img src={item.img} alt={item.title} style={{ width: "100%", height: "100%", objectFit: "cover", transition: "transform 0.7s" }} />
+              <img src={item.img} alt={item.title} style={{ width: "100%", height: "100%", objectFit: "cover", transition: "transform 0.7s" }} onError={(e) => { e.currentTarget.src = "/default-hotel.png"; e.currentTarget.onerror = null; }} />
               <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, #01141A 0%, transparent 70%)" }}></div>
               <div style={{ position: "absolute", bottom: "32px", left: "32px", right: "32px", textAlign: "left" }}>
                 <h3 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "28px", color: "var(--ivory)", fontWeight: 300, marginBottom: "8px" }}>{item.title}</h3>

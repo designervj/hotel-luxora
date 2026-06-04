@@ -77,7 +77,7 @@ export default function VelourFooter() {
                 <div style={{ width: "32px", height: "32px", borderRadius: "50%", background: "rgba(213,168,87,0.05)", border: "1px solid rgba(213,168,87,0.2)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                   <FiMail style={{ color: "var(--gold)" }} size={14} />
                 </div>
-                <span>{hotel?.email || 'reservations@hotelluxora.com'}</span>
+                <span>{hotel?.email === "reservations@hotelluxora.com" ? "hello@hotelluxora.com" : (hotel?.email || 'hello@hotelluxora.com')}</span>
               </div>
             </div>
           </div>

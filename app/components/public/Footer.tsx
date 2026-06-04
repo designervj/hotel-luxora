@@ -59,7 +59,7 @@ export default function Footer() {
                         </li>
                         <li className="flex items-center gap-3">
                             <span>✉️</span>
-                            <span>{hotel?.email || "reservations@hotelluxora.com"}</span>
+                            <span>{hotel?.email === "reservations@hotelluxora.com" ? "hello@hotelluxora.com" : (hotel?.email || "hello@hotelluxora.com")}</span>
                         </li>
                     </ul>
                 </div>
