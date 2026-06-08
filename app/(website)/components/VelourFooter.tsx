@@ -71,13 +71,13 @@ export default function VelourFooter() {
                 <div style={{ width: "32px", height: "32px", borderRadius: "50%", background: "rgba(213,168,87,0.05)", border: "1px solid rgba(213,168,87,0.2)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                   <FiMapPin style={{ color: "var(--gold)" }} size={14} />
                 </div>
-                <span style={{ paddingTop: "6px" }}>{hotel?.address || 'Commercial Complex, C-50, Sanganer, Jaipur 302022'}</span>
+                <span style={{ paddingTop: "6px" }}>{hotel?.address || 'Hotel Luxora Suites, 4th Floor, Dogma Business Hub, Near Capital High Street Mall, Mahal Road, Jagatpura, Jaipur, Rajasthan 302017'}</span>
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: "14px", fontSize: "14px", color: "var(--ivory-dim)" }}>
                 <div style={{ width: "32px", height: "32px", borderRadius: "50%", background: "rgba(213,168,87,0.05)", border: "1px solid rgba(213,168,87,0.2)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                   <FiPhone style={{ color: "var(--gold)" }} size={14} />
                 </div>
-                <span>{hotel?.phone || '+91 63678 50548'}</span>
+                <span>{hotel?.phone || '8954888990'}</span>
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: "14px", fontSize: "14px", color: "var(--ivory-dim)" }}>
                 <div style={{ width: "32px", height: "32px", borderRadius: "50%", background: "rgba(213,168,87,0.05)", border: "1px solid rgba(213,168,87,0.2)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>

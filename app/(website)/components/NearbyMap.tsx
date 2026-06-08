@@ -11,7 +11,7 @@ const hotelLocation = {
     lat: 26.7769,
     lng: 75.8123,
     name: "Hotel Luxora",
-    address: "Commercial Complex, C-50, Sanganer, Jaipur 302022"
+    address: "Hotel Luxora Suites, 4th Floor, Dogma Business Hub, Near Capital High Street Mall, Mahal Road, Jagatpura, Jaipur, Rajasthan 302017"
 };
 
 export default function NearbyMap({ places, selectedPlaceId }: NearbyMapProps) {

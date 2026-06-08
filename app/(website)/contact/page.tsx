@@ -85,7 +85,7 @@ export default function ContactPage() {
                                 </div>
                                 <div>
                                     <span className="contact-lbl">Direct Line</span>
-                                    <span className="contact-val">{hotel?.contactNumber || "+91 63678 50548"}</span>
+                                    <span className="contact-val">{hotel?.contactNumber || "8954888990"}</span>
                                 </div>
                             </div>
                             <div className="contact-item fade-in-up">
@@ -109,7 +109,7 @@ export default function ContactPage() {
                                 </div>
                                 <div>
                                     <span className="contact-lbl">Our Location</span>
-                                    <span className="contact-val">{hotel?.address || "12 Palace Road, Jaipur, Rajasthan 302001"}</span>
+                                    <span className="contact-val">{hotel?.address || "Hotel Luxora Suites, 4th Floor, Dogma Business Hub, Near Capital High Street Mall, Mahal Road, Jagatpura, Jaipur, Rajasthan 302017"}</span>
                                 </div>
                             </div>
                         </div>

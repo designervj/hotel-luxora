@@ -51,11 +51,11 @@ export default function Footer() {
                     <ul className="space-y-4 text-sm text-gray-400">
                         <li className="flex items-start gap-3">
                             <span className="mt-1">📍</span>
-                            <span>{hotel?.address || "123 Eagle Avenue"}<br />{hotel?.city}, {hotel?.country}</span>
+                            <span>{hotel?.address || "Hotel Luxora Suites, 4th Floor, Dogma Business Hub, Near Capital High Street Mall, Mahal Road, Jagatpura, Jaipur, Rajasthan 302017"}<br />{hotel?.city || "Jaipur"}, {hotel?.country || "India"}</span>
                         </li>
                         <li className="flex items-center gap-3">
                             <span>📞</span>
-                            <span>{hotel?.contactNumber || "+91 63678 50548"}</span>
+                            <span>{hotel?.contactNumber || "8954888990"}</span>
                         </li>
                         <li className="flex items-center gap-3">
                             <span>✉️</span>

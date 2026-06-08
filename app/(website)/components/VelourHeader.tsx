@@ -44,8 +44,8 @@ export default function VelourHeader() {
         { label: "Contact", href: "/contact" },
     ];
 
-    const phone = hotel?.phone || "+91 63678 50548";
-    const phoneTel = hotel?.phone || "+916367850548";
+    const phone = hotel?.phone || "8954888990";
+    const phoneTel = hotel?.phone || "8954888990";
     const email = hotel?.email === "reservations@hotelluxora.com" ? "hello@hotelluxora.com" : (hotel?.email || "hello@hotelluxora.com");
 
     return (
