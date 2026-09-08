@@ -10,6 +10,69 @@ import NearbyPlaces from "./components/NearbyPlaces";
 import { AmenitiesSection, PromoSection, DiningSection, EventsSection } from "./components/ExtraSections";
 import type { CMSPage, HeroSection, HomeTextSection, HomeQuoteSection, HomeTestimonialsSection, TextImageSection, AboutSection, AmenityCat } from "../components/types";
 
+const DEFAULT_HOME_SECTIONS = [
+    {
+        id: "home_hero_default",
+        type: "hero",
+        title: "Smart, Simple",
+        titleEm: "Comfort",
+        subtitle: "An intimate retreat in the heart of Sitapura, Jaipur where affordability meets the warmth of genuine hospitality.",
+        primaryButtonLabel: "Explore Rooms",
+        primaryButtonLink: "/book",
+        secondaryButtonLabel: "Our Story",
+        secondaryButtonLink: "#about",
+        images: [
+            { url: "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?q=80&w=2070&auto=format&fit=crop" },
+            { url: "https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=2070&auto=format&fit=crop" },
+        ],
+        stats: [
+            { id: "s1", value: "24/7", label: "Guest Support" },
+            { id: "s2", value: "340+", label: "Happy Guests" },
+            { id: "s3", value: "4.9", label: "Guest Rating" },
+        ],
+    },
+    {
+        id: "home_about_default",
+        type: "text-image",
+        imagePosition: "right",
+        heading: "Budget-Friendly Stay in Jaipur",
+        description: "Hotel Luxora offers clean, comfortable and thoughtfully designed stays near Sitapura and Jagatpura. Whether you are visiting for business, family travel, exams, weddings or a short city break, our team keeps every stay simple, warm and dependable.\n\nEnjoy essential comforts, convenient access to nearby landmarks, and honest hospitality that helps you feel at home from check-in to checkout.",
+        highlightTerms: "clean, comfortable, Sitapura, Jagatpura, honest hospitality",
+        images: [{ url: "/default-hotel.png" }],
+        stats: [
+            { id: "s4", value: "3", label: "Star Comfort" },
+            { id: "s5", value: "24/7", label: "Front Desk" },
+        ],
+        pillars: [
+            { id: "p1", icon: "", title: "Prime Location", desc: "Close to malls, hospitals, colleges and business hubs." },
+            { id: "p2", icon: "", title: "Comfort First", desc: "Neat rooms, reliable service and peaceful rest." },
+            { id: "p3", icon: "", title: "Easy Booking", desc: "Quick reservations with direct support from our team." },
+        ],
+    },
+    {
+        id: "home_quote_default",
+        type: "quote",
+        eyebrow: "Our Promise",
+        text: "Simple comfort, sincere service and a stay experience designed around your convenience.",
+    },
+    {
+        id: "home_testimonials_default",
+        type: "testimonials",
+        eyebrow: "Guest Stories",
+        heading: "Voices of",
+        headingEm: "Luxora",
+    },
+] as const;
+
+async function fetchJson<T>(url: string, fallback: T): Promise<T> {
+    try {
+        const res = await fetch(url);
+        return res.ok ? await res.json() : fallback;
+    } catch {
+        return fallback;
+    }
+}
+
 // ─── Highlight helper (same as About page) ────────────────────────────────────
 
 function renderWithHighlights(text: string, terms: string): React.ReactNode {
@@ -358,9 +421,9 @@ export default function HomePage() {
 
     useEffect(() => {
         Promise.all([
-            fetch("/api/pages?slug=home").then(r => r.ok ? r.json() : null),
-            fetch("/api/room-types").then(r => r.ok ? r.json() : []),
-            fetch("/api/amenities").then(r => r.ok ? r.json() : [])
+            fetchJson<CMSPage | null>("/api/pages?slug=home", null),
+            fetchJson<any[]>("/api/room-types", []),
+            fetchJson<AmenityCat[]>("/api/amenities", [])
         ])
         .then(([cms, rData, aData]) => {
             if (cms?.slug === "home") setCmsData(cms);
@@ -393,10 +456,10 @@ export default function HomePage() {
     
     if (loading) return <Loading />;
 
-    const sections: any[] = useCMS ? (cmsData!.sections as any[]) : [];
+    const sections: any[] = useCMS ? (cmsData!.sections as any[]) : [...DEFAULT_HOME_SECTIONS];
 
     // Find if there is a CMS-managed hero or a text-image "about" section
-    const heroSection = sections.find(s => s.type === "hero") as HeroSection | undefined;
+    const heroSection = (sections.find(s => s.type === "hero") || DEFAULT_HOME_SECTIONS[0]) as HeroSection;
     const textImageSections = sections.filter(s => s.type === "text-image") as HomeTextSection[];
     const quoteSections = sections.filter(s => s.type === "quote") as HomeQuoteSection[];
     const testimSections = sections.filter(s => s.type === "testimonials") as HomeTestimonialsSection[];
@@ -405,7 +468,7 @@ export default function HomePage() {
     return (
         <>
             {/* Hero */}
-            {heroSection && <HeroRenderer sec={heroSection} />}
+            <HeroRenderer sec={heroSection} />
 
             <PromoSection />
 
@@ -437,5 +500,4 @@ export default function HomePage() {
         </>
     );
 }
-
 

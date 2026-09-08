@@ -6,7 +6,7 @@ const envFile = fs.readFileSync('.env', 'utf-8');
 const mongoUriMatch = envFile.match(/MONGODB_URI=(.*)/);
 const mongoDbMatch = envFile.match(/MONGODB_DB=(.*)/);
 const MONGODB_URI = mongoUriMatch ? mongoUriMatch[1].trim().replace(/^"|"$/g, '') : null;
-const MONGODB_DB = mongoDbMatch ? mongoDbMatch[1].trim().replace(/^"|"$/g, '') : "hotel_management";
+const MONGODB_DB = mongoDbMatch ? mongoDbMatch[1].trim().replace(/^"|"$/g, '') : "kp_hotel_luxora";
 
 const LEGAL_PAGES = [
     {

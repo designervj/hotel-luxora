@@ -18,7 +18,7 @@ function loadEnv() {
 loadEnv();
 
 const uri = process.env.MONGODB_URI;
-const dbName = process.env.MONGODB_DB || 'hotel_management';
+const dbName = process.env.MONGODB_DB || 'kp_hotel_luxora';
 
 async function diagnose() {
   const client = new MongoClient(uri);

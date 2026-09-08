@@ -1,17 +1,20 @@
 const { MongoClient } = require('mongodb');
-const uri = 'mongodb://cs530885_db_user:uhKijf1PLxANW4pv@ac-jrejbqh-shard-00-00.yctt4gm.mongodb.net:27017,ac-jrejbqh-shard-00-01.yctt4gm.mongodb.net:27017,ac-jrejbqh-shard-00-02.yctt4gm.mongodb.net:27017/tours_travel?ssl=true&authSource=admin&replicaSet=atlas-6oz9oy-shard-0&retryWrites=true&w=majority';
+const { readMongoEnv } = require('./read-mongo-env');
+const { uri, dbName } = readMongoEnv();
+const oldBrand = ['Grand', 'Eagle'].join(' ');
+const oldBrandCompact = oldBrand.replace(/\s+/g, '').toLowerCase();
+const oldHotelBrand = ['Hotel', oldBrand].join(' ');
 
 const client = new MongoClient(uri);
 
 async function searchAndReplace(str) {
   return str
-    .replace(/HOTEL GRAND EAGLE/gi, 'HOTEL LUXORA')
-    .replace(/Hotel Grand Eagle/g, 'Hotel Luxora')
-    .replace(/GRAND EAGLE/g, 'LUXORA')
-    .replace(/Grand Eagle/g, 'Luxora')
-    .replace(/grand eagle/g, 'luxora')
-    .replace(/grandeagle/gi, 'hotelluxora')
-    .replace(/hotelgrandeagle/gi, 'hotelluxora');
+    .replace(new RegExp(oldHotelBrand, 'gi'), 'Hotel Luxora')
+    .replace(new RegExp(oldHotelBrand.toUpperCase(), 'g'), 'HOTEL LUXORA')
+    .replace(new RegExp(oldBrand.toUpperCase(), 'g'), 'LUXORA')
+    .replace(new RegExp(oldBrand, 'gi'), 'Luxora')
+    .replace(new RegExp(oldBrandCompact, 'gi'), 'hotelluxora')
+    .replace(new RegExp(`hotel${oldBrandCompact}`, 'gi'), 'hotelluxora');
 }
 
 function replaceInValue(val) {
@@ -27,13 +30,13 @@ function replaceInValue(val) {
   return val;
 }
 
-function hasGrandEagle(val) {
+function hasOldBrand(val) {
   const str = JSON.stringify(val);
-  return /grand eagle/i.test(str);
+  return new RegExp(oldBrand, 'i').test(str);
 }
 
 client.connect().then(async () => {
-  const db = client.db('hotel_management');
+  const db = client.db(dbName);
   const collections = await db.listCollections().toArray();
   
   for (const coll of collections) {
@@ -41,7 +44,7 @@ client.connect().then(async () => {
     const docs = await col.find().toArray();
     
     for (const doc of docs) {
-      if (hasGrandEagle(doc)) {
+      if (hasOldBrand(doc)) {
         const { _id, ...rest } = doc;
         const updated = replaceInValue(rest);
         await col.updateOne({ _id }, { $set: updated });

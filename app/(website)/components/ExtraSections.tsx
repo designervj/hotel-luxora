@@ -79,7 +79,7 @@ export function PromoSection() {
         <p style={{ fontSize: "16px", color: "var(--ivory-dim)", lineHeight: 1.8, marginBottom: "48px", maxWidth: "600px", margin: "0 auto 48px auto" }}>
           Experience premium luxury at an affordable price. Book our exclusive couple package and enjoy a romantic getaway with complimentary breakfast, welcome drinks, and late checkout. Starts at ₹999*.
         </p>
-        <Link href="/rooms" style={{ display: "inline-flex", alignItems: "center", gap: "12px", padding: "18px 40px", background: "var(--gold-gradient)", color: "#01141A", fontSize: "13px", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.15em", textDecoration: "none", transition: "transform 0.3s" }} onMouseEnter={e => e.currentTarget.style.transform = "translateY(-2px)"} onMouseLeave={e => e.currentTarget.style.transform = "translateY(0)"}>
+        <Link href="/book" style={{ display: "inline-flex", alignItems: "center", gap: "12px", padding: "18px 40px", background: "var(--gold-gradient)", color: "#01141A", fontSize: "13px", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.15em", textDecoration: "none", transition: "transform 0.3s" }} onMouseEnter={e => e.currentTarget.style.transform = "translateY(-2px)"} onMouseLeave={e => e.currentTarget.style.transform = "translateY(0)"}>
           Book Now
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="9,18 15,12 9,6" /></svg>
         </Link>
@@ -113,7 +113,7 @@ export function DiningSection() {
             <p style={{ fontSize: "15px", color: "var(--ivory-dim)", lineHeight: 1.8, marginBottom: "40px" }}>
               Whether you are looking for a romantic candlelit dinner, a casual business lunch, or relaxing evening cocktails at our rooftop lounge, we offer the perfect ambiance for every occasion.
             </p>
-            <Link href="/dining" style={{ display: "inline-flex", alignItems: "center", gap: "12px", padding: "16px 32px", border: "1px solid var(--gold)", color: "var(--gold)", fontSize: "12px", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.15em", textDecoration: "none" }}>
+            <Link href="/#dining" style={{ display: "inline-flex", alignItems: "center", gap: "12px", padding: "16px 32px", border: "1px solid var(--gold)", color: "var(--gold)", fontSize: "12px", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.15em", textDecoration: "none" }}>
               Explore Menus
             </Link>
           </div>

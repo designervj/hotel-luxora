@@ -225,6 +225,26 @@ export default async function DynamicCMSPage({ params }: PageProps) {
                 .cms-content li { margin-bottom: 0.4em; }
                 .cms-content strong, .cms-content b { color: #f5f0eb; font-weight: 700; }
                 .cms-content em, .cms-content i { font-style: italic; }
+                .cms-block-content h1,
+                .cms-block-content h2,
+                .cms-block-content h3,
+                .cms-block-content h4,
+                .cms-block-content h5,
+                .cms-block-content h6 {
+                    color: #f5f0eb;
+                    font-family: 'Cormorant Garamond', serif;
+                }
+                .cms-block-content p,
+                .cms-block-content li,
+                .cms-block-content span {
+                    color: #d4cfc8;
+                }
+                .cms-block-content a { color: #d4a857; }
+                .cms-block-content section {
+                    max-width: 100%;
+                    padding-left: 0;
+                    padding-right: 0;
+                }
                 .cms-content img {
                     max-width: 100%;
                     border-radius: 10px;

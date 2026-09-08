@@ -1,5 +1,6 @@
 const { MongoClient } = require('mongodb');
-const uri = 'mongodb://cs530885_db_user:uhKijf1PLxANW4pv@ac-jrejbqh-shard-00-00.yctt4gm.mongodb.net:27017,ac-jrejbqh-shard-00-01.yctt4gm.mongodb.net:27017,ac-jrejbqh-shard-00-02.yctt4gm.mongodb.net:27017/tours_travel?ssl=true&authSource=admin&replicaSet=atlas-6oz9oy-shard-0&retryWrites=true&w=majority';
+const { readMongoEnv } = require('./read-mongo-env');
+const { uri, dbName } = readMongoEnv();
 
 const client = new MongoClient(uri);
 
@@ -34,7 +35,7 @@ function fixEmptyObjects(val) {
 }
 
 client.connect().then(async () => {
-  const db = client.db('hotel_management');
+  const db = client.db(dbName);
   const collections = await db.listCollections().toArray();
 
   for (const coll of collections) {
