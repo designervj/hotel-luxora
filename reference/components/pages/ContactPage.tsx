@@ -131,7 +131,7 @@ const ContactPage = () => {
                     </div>
                     <span className="text-[11px] font-black uppercase tracking-[2px] text-muted">Phone</span>
                   </div>
-                  <p className="text-2xl font-bold tracking-tight">+91 9810159604</p>
+                  <p className="text-2xl font-bold tracking-tight">+91 63767 64803</p>
                   <div className="w-0 group-hover:w-full h-px bg-secondary transition-all duration-500 mt-2" />
                 </div>
 

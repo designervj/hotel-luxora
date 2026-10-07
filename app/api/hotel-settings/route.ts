@@ -7,7 +7,7 @@ const DEFAULT_SETTINGS = {
     address: "Hotel Luxora Suites, 4th Floor, Dogma Business Hub, Near Capital High Street Mall, Mahal Road, Jagatpura, Jaipur, Rajasthan 302017",
     city: "Jaipur",
     country: "India",
-    contactNumber: "8954888990",
+    contactNumber: "+91 63767 64803",
     email: "hello@hotelluxora.com",
     checkInTime: "15:00",
     checkOutTime: "12:00",

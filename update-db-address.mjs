@@ -34,8 +34,8 @@ async function updateDb() {
       {},
       { $set: { 
           address: "Hotel Luxora Suites, 4th Floor, Dogma Business Hub, Near Capital High Street Mall, Mahal Road, Jagatpura, Jaipur, Rajasthan 302017",
-          contactNumber: "8954888990",
-          phone: "8954888990"
+          contactNumber: "+91 63767 64803",
+          phone: "+91 63767 64803"
         } 
       }
     );

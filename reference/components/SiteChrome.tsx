@@ -999,10 +999,10 @@ const Header = ({
           {/* UPDATED: Top Bar Spacing (Tighter gaps as requested) */}
           <div className="flex items-center gap-3 sm:gap-4 font-medium">
             <a
-              href="tel:+91 9810159604"
+              href="tel:+916376764803"
               className="flex items-center gap-1.5 hover:text-secondary transition-colors"
             >
-              <Phone size={13} /> +91-9810159604
+              <Phone size={13} /> +91 63767 64803
             </a>
             <div className="w-px h-3.5 bg-border/80"></div>
             <Link

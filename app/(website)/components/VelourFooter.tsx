@@ -77,7 +77,7 @@ export default function VelourFooter() {
                 <div style={{ width: "32px", height: "32px", borderRadius: "50%", background: "rgba(213,168,87,0.05)", border: "1px solid rgba(213,168,87,0.2)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                   <FiPhone style={{ color: "var(--gold)" }} size={14} />
                 </div>
-                <span>{hotel?.phone || '8954888990'}</span>
+                <span>{hotel?.phone || '+91 63767 64803'}</span>
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: "14px", fontSize: "14px", color: "var(--ivory-dim)" }}>
                 <div style={{ width: "32px", height: "32px", borderRadius: "50%", background: "rgba(213,168,87,0.05)", border: "1px solid rgba(213,168,87,0.2)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>

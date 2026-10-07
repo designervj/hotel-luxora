@@ -156,7 +156,7 @@ const FAQPage = () => {
           <div className="grid md:grid-cols-3 gap-8">
             {[
               { icon: MessageCircle, title: 'Live Chat', sub: 'Chat with our support team in real-time.', action: 'Start Chat' },
-              { icon: Phone, title: 'Phone Support', sub: 'Call us at +91 123 456 7890 (Mon-Fri).', action: 'Call Now' },
+              { icon: Phone, title: 'Phone Support', sub: 'Call us at +91 63767 64803.', action: 'Call Now' },
               { icon: Mail, title: 'Email Us', sub: 'Send us an email at support@nestcraft.com.', action: 'Send Email' }
             ].map((item, idx) => (
               <motion.div 

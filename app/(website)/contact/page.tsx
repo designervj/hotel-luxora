@@ -85,7 +85,7 @@ export default function ContactPage() {
                                 </div>
                                 <div>
                                     <span className="contact-lbl">Direct Line</span>
-                                    <span className="contact-val">{hotel?.contactNumber || "8954888990"}</span>
+                                    <span className="contact-val">{hotel?.contactNumber || "+91 63767 64803"}</span>
                                 </div>
                             </div>
                             <div className="contact-item fade-in-up">
