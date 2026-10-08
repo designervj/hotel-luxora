@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useMemo } from "react";
-import { Booking, Room, MealPlan, HousekeepingTask } from "./types";
+import { Booking, Room, MealPlan, HousekeepingTask, RoomItem } from "./types";
 import { fmtDate, fmt } from "./ui";
 
 interface Props {

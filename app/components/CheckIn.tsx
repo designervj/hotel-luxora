@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useMemo } from "react";
-import { Booking, Customer, Room, MealPlan, Availability } from "./types";
+import { Booking, Customer, Room, MealPlan, Availability, RoomItem } from "./types";
 import { Btn, Badge, Field, Inp, Sel, Ic, fmtDate, statusColor } from "./ui";
 
 interface Props {

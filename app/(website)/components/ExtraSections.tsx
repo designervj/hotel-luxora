@@ -143,7 +143,7 @@ export function EventsSection() {
             { title: "Corporate Meetings", img: "https://images.unsplash.com/photo-1544644181-1484b3fdfc62?auto=format&fit=crop&q=80" },
             { title: "Private Parties", img: "https://images.unsplash.com/photo-1587595431973-160d0d94add1?auto=format&fit=crop&q=80" }
           ].map((item, idx) => (
-            <div key={idx} style={{ position: "relative", height: "400px", overflow: "hidden", cursor: "pointer", group: "true" }}>
+            <div key={idx} className="group" style={{ position: "relative", height: "400px", overflow: "hidden", cursor: "pointer" }}>
               <img src={item.img} alt={item.title} style={{ width: "100%", height: "100%", objectFit: "cover", transition: "transform 0.7s" }} onError={(e) => { e.currentTarget.src = "/default-hotel.png"; e.currentTarget.onerror = null; }} />
               <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, #01141A 0%, transparent 70%)" }}></div>
               <div style={{ position: "absolute", bottom: "32px", left: "32px", right: "32px", textAlign: "left" }}>

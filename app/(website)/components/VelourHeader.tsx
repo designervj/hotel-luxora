@@ -58,7 +58,7 @@ export default function VelourHeader() {
                 </div>
                 
                 <div style={{ flex: 1, margin: "0 40px", overflow: "hidden", whiteSpace: "nowrap" }}>
-                    <marquee scrollamount="5" style={{ display: "block" }}>
+                    {React.createElement("marquee", { scrollamount: "5", style: { display: "block" } },
                         <div style={{ display: "inline-flex", alignItems: "center", gap: "8px" }}>
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0L14.59 8.41L23 11L14.59 13.59L12 22L9.41 13.59L1 11L9.41 8.41L12 0Z"/></svg>
                             <span>Welcome to Hotel Luxora</span>
@@ -66,7 +66,7 @@ export default function VelourHeader() {
                             <span>Experience the pinnacle of luxury and comfort. Book directly with us for exclusive offers and the best rates!</span>
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0L14.59 8.41L23 11L14.59 13.59L12 22L9.41 13.59L1 11L9.41 8.41L12 0Z"/></svg>
                         </div>
-                    </marquee>
+                    )}
                 </div>
 
                 <div style={{ display: "flex", alignItems: "center", gap: "8px", flexShrink: 0 }}>

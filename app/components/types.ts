@@ -36,6 +36,7 @@ export interface Room {
     currency: string;
     amenityIds: string[];
     images: string[];
+    roomNumbers?: string[];
     isTest?: boolean;
 }
 
