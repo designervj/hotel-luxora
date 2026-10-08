@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { generateCodeChallenge, generateCodeVerifier } from "@/lib/pkce";
 
 export default function KalptreeLoginForm() {
   const router = useRouter();
@@ -11,43 +12,115 @@ export default function KalptreeLoginForm() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  const tenantSlug = (process.env.NEXT_PUBLIC_TENANT_SLUG || "hotel-luxora").trim();
+  const tenantId = (process.env.NEXT_PUBLIC_TENANT_ID || "kp_hotel_luxora").trim();
+  const rawAdminUrl =
+    process.env.NEXT_PUBLIC_ADMIN_URL || "https://zerolive.kalptree.xyz";
+  const adminBaseUrl = rawAdminUrl
+    .trim()
+    .replace(/^['"]+|['"]+$/g, "")
+    .replace(/\/+$/, "");
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (!email.trim() || !password) return;
+
     setError("");
     setLoading(true);
 
     try {
-      const res = await fetch("/api/kalptree-login", {
+      // Step 1: Authenticate with Kalp Business API directly
+      const rawApiBase = (
+        process.env.NEXT_PUBLIC_API_BASE_URL || "https://bizlive.kalptree.xyz"
+      ).replace(/\/+$/, "");
+      const authApiUrl = rawApiBase.endsWith("/api")
+        ? `${rawApiBase}/auth`
+        : `${rawApiBase}/api/auth`;
+
+      const loginRes = await fetch(`${authApiUrl}/login`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ emailOrPhone: email.trim(), password }),
+        headers: {
+          "Content-Type": "application/json",
+          accept: "application/json",
+          "x-tenant-db": tenantId,
+          "x-tenant-slug": tenantSlug,
+        },
+        body: JSON.stringify({
+          email: email.trim(),
+          password,
+          tenant_slug: tenantSlug,
+          keepSignedIn: false,
+          keep_signed_in: false,
+        }),
       });
 
-      const responseText = await res.text();
-      let data: any = {};
+      const loginData = await loginRes.json().catch(() => ({}));
 
+      if (!loginRes.ok || !loginData.access_token) {
+        throw new Error(
+          loginData.detail ||
+            loginData.message ||
+            "Invalid credentials or unauthorized access."
+        );
+      }
+
+      const token = loginData.access_token;
+
+      // Set local cookies and tokens so session is available
+      const maxAge = 60 * 60 * 24 * 30;
+      document.cookie = `auth_token=${token}; path=/; max-age=${maxAge}; SameSite=Lax`;
+      document.cookie = `${tenantId}_auth_token=${token}; path=/; max-age=${maxAge}; SameSite=Lax`;
+      document.cookie = `auth_token_${tenantId}=${token}; path=/; max-age=${maxAge}; SameSite=Lax`;
+      document.cookie = `admin_token=${token}; path=/; max-age=${maxAge}; SameSite=Lax`;
       try {
-        data = responseText ? JSON.parse(responseText) : {};
-      } catch {
-        data = { error: responseText || "Login request failed." };
+        localStorage.setItem("auth_token", token);
+      } catch {}
+
+      // Step 2: Generate PKCE Verifier and Challenge for admin console handoff
+      const codeVerifier = generateCodeVerifier();
+      const codeChallenge = await generateCodeChallenge(codeVerifier);
+
+      // Step 3: Call SSO Create endpoint
+      const targetDashboard = `/canvas/${tenantSlug}/home`;
+      const redirectUri = `${adminBaseUrl}/auth/callback`;
+
+      const ssoRes = await fetch("/api/auth/sso/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+          "x-tenant-db": tenantId,
+          "x-tenant-slug": tenantSlug,
+        },
+        body: JSON.stringify({
+          redirectUri,
+          codeChallenge,
+          codeVerifier,
+          returnTo: targetDashboard,
+          redirect: targetDashboard,
+        }),
+      });
+
+      const ssoData = await ssoRes.json().catch(() => ({}));
+
+      if (!ssoRes.ok || !ssoData.success || !ssoData.code) {
+        throw new Error(
+          ssoData.detail ||
+            ssoData.message ||
+            "Failed to establish admin session. Please try again."
+        );
       }
 
-      if (!res.ok) {
-        setError(data.error || "Invalid email or password.");
-        return;
-      }
-
-      if (data.user?.role !== "admin") {
-        setError("This account does not have admin access.");
-        return;
-      }
-
-      window.location.href = "https://zerolive.kalptree.xyz/hotel-luxora/dashboard";
-      return;
-    } catch (err) {
-      console.error("Kalptree login failed", err);
-      setError("Login service is not reachable. Please refresh and try again.");
+      const callbackUrl = `${redirectUri}?code=${encodeURIComponent(
+        ssoData.code
+      )}&returnTo=${encodeURIComponent(targetDashboard)}&redirect=${encodeURIComponent(
+        targetDashboard
+      )}&next=${encodeURIComponent(targetDashboard)}`;
+      window.location.href = callbackUrl;
+    } catch (err: any) {
+      console.error("[KalptreeLogin] Error:", err);
+      const msg = err.message || "Login failed. Please verify your credentials.";
+      setError(msg);
     } finally {
       setLoading(false);
     }
