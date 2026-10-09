@@ -234,7 +234,11 @@ function BookingForm() {
         setSubmitting(true);
         try {
             const rRes = await fetch(`/api/rooms?checkIn=${checkIn}&checkOut=${checkOut}&roomTypeId=${selectedRoomId}`);
-            const pRooms = await rRes.json();
+            const roomPayload = await rRes.json().catch(() => null);
+            if (!rRes.ok) {
+                throw new Error((roomPayload && typeof roomPayload.error === "string" ? roomPayload.error : "Room availability could not be checked."));
+            }
+            const pRooms = Array.isArray(roomPayload) ? roomPayload : Array.isArray(roomPayload?.rooms) ? roomPayload.rooms : Array.isArray(roomPayload?.data) ? roomPayload.data : [];
             
             if (!pRooms.length) {
                 alert("Sorry, rooms of this type are no longer available for these dates.");
@@ -287,17 +291,21 @@ function BookingForm() {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(bookingPayload)
             });
+            const bookingResult = await bookRes.json().catch(() => null);
 
             if (bookRes.status === 409) {
-                alert("Conflict: The room was just booked by someone else. Please try again.");
+                alert((bookingResult && typeof bookingResult.error === "string" ? bookingResult.error : "Conflict: The room was just booked by someone else. Please try again."));
                 setStep(1);
                 return;
+            }
+            if (!bookRes.ok) {
+                throw new Error((bookingResult && typeof bookingResult.error === "string" ? bookingResult.error : "Booking could not be created. Please try again."));
             }
             setRefId(br);
             setSuccess(true);
         } catch (err) {
             console.error(err);
-            alert("An error occurred while confirming your booking.");
+            alert(err instanceof Error ? err.message : "An error occurred while confirming your booking.");
         } finally {
             setSubmitting(false);
         }
@@ -601,4 +609,3 @@ export default function BookPage() {
         </Suspense>
     );
 }
-
