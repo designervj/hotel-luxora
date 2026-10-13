@@ -1,7 +1,9 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { NearbyPlace } from "../../components/types";
 import { FaMapMarkerAlt, FaPlane, FaHospital, FaUniversity, FaBuilding, FaRoad } from "react-icons/fa";
+import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
+import { fetchNearbyPlaces } from "@/lib/store/slices/nearbySlice";
 
 const ICON_MAP: Record<string, React.ReactNode> = {
   "JAIPUR INTERNATIONAL AIRPORT": <FaPlane />,
@@ -14,21 +16,18 @@ const ICON_MAP: Record<string, React.ReactNode> = {
 };
 
 export default function NearbyPlaces() {
-  const [places, setPlaces] = useState<NearbyPlace[]>([]);
-  const [loading, setLoading] = useState(true);
+  const dispatch = useAppDispatch();
+  const allPlaces = useAppSelector((state) => state.nearby.places);
+  const loading = useAppSelector((state) => state.nearby.loading);
 
   useEffect(() => {
-    fetch("/api/nearby")
-      .then((res) => (res.ok ? res.json() : []))
-      .then((data) => {
-        // Show only 3-4 places as requested
-        setPlaces(data.slice(0, 4));
-      })
-      .catch((err) => console.error("Error fetching nearby places:", err))
-      .finally(() => setLoading(false));
-  }, []);
+    dispatch(fetchNearbyPlaces());
+  }, [dispatch]);
 
-  if (loading || places.length === 0) return null;
+  const places = allPlaces.slice(0, 4);
+
+  if (loading && places.length === 0) return null;
+  if (places.length === 0) return null;
 
   return (
     <div className="nearby-section fade-in-up visible">

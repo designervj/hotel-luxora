@@ -9,6 +9,10 @@ import Loading from "./components/Loading";
 import NearbyPlaces from "./components/NearbyPlaces";
 import { AmenitiesSection, PromoSection, DiningSection, EventsSection } from "./components/ExtraSections";
 import type { CMSPage, HeroSection, HomeTextSection, HomeQuoteSection, HomeTestimonialsSection, TextImageSection, AboutSection, AmenityCat } from "../components/types";
+import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
+import { fetchPageBySlug } from "@/lib/store/slices/cmsSlice";
+import { fetchRooms } from "@/lib/store/slices/roomsSlice";
+import { fetchAmenities } from "@/lib/store/slices/amenitiesSlice";
 
 const DEFAULT_HOME_SECTIONS = [
     {
@@ -414,25 +418,19 @@ function QuoteRenderer({ sec }: { sec: HomeQuoteSection }) {
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
 export default function HomePage() {
-    const [cmsData, setCmsData] = useState<CMSPage | null>(null);
-    const [rooms, setRooms] = useState<any[]>([]);
-    const [amenities, setAmenities] = useState<AmenityCat[]>([]);
-    const [loading, setLoading] = useState(true);
+    const dispatch = useAppDispatch();
+    const cmsData = useAppSelector((state) => state.cms.pagesBySlug["home"] || null);
+    const rooms = useAppSelector((state) => state.rooms.rooms);
+    const amenities = useAppSelector((state) => state.amenities.categories);
+    const [isLoaded, setIsLoaded] = useState(false);
 
     useEffect(() => {
         Promise.all([
-            fetchJson<CMSPage | null>("/api/pages?slug=home", null),
-            fetchJson<any[]>("/api/room-types", []),
-            fetchJson<AmenityCat[]>("/api/amenities", [])
-        ])
-        .then(([cms, rData, aData]) => {
-            if (cms?.slug === "home") setCmsData(cms);
-            if (Array.isArray(rData)) setRooms(rData);
-            if (Array.isArray(aData)) setAmenities(aData);
-        })
-        .catch(() => {})
-        .finally(() => setLoading(false));
-    }, []);
+            dispatch(fetchPageBySlug("home")),
+            dispatch(fetchRooms()),
+            dispatch(fetchAmenities())
+        ]).finally(() => setIsLoaded(true));
+    }, [dispatch]);
 
     // Scroll animation observer
     useEffect(() => {
@@ -450,11 +448,11 @@ export default function HomePage() {
         );
         fadeEls.forEach(el => { el.classList.remove("visible"); observer.observe(el); });
         return () => observer.disconnect();
-    }, [cmsData]);
+    }, [cmsData, isLoaded]);
 
     const useCMS = cmsData?.isPublished && cmsData?.sections && (cmsData.sections as any[]).length > 0;
     
-    if (loading) return <Loading />;
+    if (!isLoaded && !cmsData && rooms.length === 0) return <Loading />;
 
     const sections: any[] = useCMS ? (cmsData!.sections as any[]) : [...DEFAULT_HOME_SECTIONS];
 

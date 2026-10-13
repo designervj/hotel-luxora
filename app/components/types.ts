@@ -89,6 +89,7 @@ export interface Hotel {
     city: string;
     country: string;
     contactNumber: string;
+    phone?: string;
     email: string;
     checkInTime: string;
     checkOutTime: string;

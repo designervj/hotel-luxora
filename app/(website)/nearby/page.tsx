@@ -1,6 +1,8 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import NearbyMap from "../components/NearbyMap";
+import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
+import { fetchNearbyPlaces } from "@/lib/store/slices/nearbySlice";
 
 interface Attraction {
     name: string;
@@ -13,7 +15,7 @@ interface Category {
     items: Attraction[];
 }
 
-const CATEGORIES: Category[] = [
+const DEFAULT_CATEGORIES: Category[] = [
     {
         id: "airport",
         title: "AIRPORT",
@@ -61,7 +63,30 @@ const CATEGORIES: Category[] = [
 ];
 
 export default function NearbyPage() {
-    const [activeCategory, setActiveCategory] = useState<string>("airport");
+    const dispatch = useAppDispatch();
+    const dbPlaces = useAppSelector((state) => state.nearby.places);
+    const [activeCategory, setActiveCategory] = useState<string>("featured");
+
+    useEffect(() => {
+        dispatch(fetchNearbyPlaces());
+    }, [dispatch]);
+
+    const categories: Category[] = [
+        ...(dbPlaces.length > 0 ? [{
+            id: "featured",
+            title: "HOTEL HIGHLIGHTS",
+            items: dbPlaces.map(p => ({
+                name: p.name,
+                timing: p.distance || "Few mins"
+            }))
+        }] : []),
+        ...DEFAULT_CATEGORIES
+    ];
+
+    // Ensure valid active category
+    const currentActive = categories.some(c => c.id === activeCategory)
+        ? activeCategory
+        : categories[0]?.id || "airport";
 
     return (
         <div style={{ 
@@ -112,8 +137,8 @@ export default function NearbyPage() {
                 }}>
                     {/* Left: Accordion */}
                     <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-                        {CATEGORIES.map((cat) => {
-                            const isActive = activeCategory === cat.id;
+                        {categories.map((cat) => {
+                            const isActive = currentActive === cat.id;
                             return (
                                 <div 
                                     key={cat.id}

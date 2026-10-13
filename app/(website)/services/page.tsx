@@ -1,12 +1,17 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import { Hotel } from "../../components/types";
+import React, { useEffect } from "react";
+import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
+import { fetchHotelSettings } from "@/lib/store/slices/hotelSlice";
+import { fetchAmenities } from "@/lib/store/slices/amenitiesSlice";
 
 export default function ServicesPage() {
-    const [hotel, setHotel] = useState<Hotel | null>(null);
+    const dispatch = useAppDispatch();
+    const hotel = useAppSelector((state) => state.hotel.data);
+    const amenities = useAppSelector((state) => state.amenities.categories);
 
     useEffect(() => {
-        fetch("/api/hotel-settings").then(r => r.json()).then(d => { if (d.name) setHotel(d); }).catch(() => {});
+        dispatch(fetchHotelSettings());
+        dispatch(fetchAmenities());
         
         // Handle animations
         const fadeEls = document.querySelectorAll('.fade-in-up');
@@ -20,7 +25,7 @@ export default function ServicesPage() {
         }, { threshold: 0.1 });
         fadeEls.forEach(el => observer.observe(el));
         return () => observer.disconnect();
-    }, []);
+    }, [dispatch]);
 
     const services = [
         { i: "🥂", t: "Private Concierge", d: "A dedicated team to curate your itinerary, handle exclusive reservations, and ensure every requirement is met with absolute discretion." },

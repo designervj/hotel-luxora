@@ -1,5 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
+import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
+import { fetchGallery } from "@/lib/store/slices/gallerySlice";
 
 const FALLBACK_IMAGES = [
     "https://images.unsplash.com/photo-1611892440504-42a792e24d32?q=80&w=1200",
@@ -17,18 +19,16 @@ const FALLBACK_IMAGES = [
 ];
 
 export default function GalleryPage() {
+    const dispatch = useAppDispatch();
+    const dbImages = useAppSelector((state) => state.gallery.images);
     const [lightboxSrc, setLightboxSrc] = useState("");
-    const [images, setImages] = useState<string[]>(FALLBACK_IMAGES);
+
+    const images = dbImages && dbImages.length > 0 
+        ? dbImages.map(img => img.url) 
+        : FALLBACK_IMAGES;
 
     useEffect(() => {
-        fetch("/api/gallery")
-            .then(r => r.json())
-            .then(data => {
-                if (Array.isArray(data) && data.length > 0) {
-                    setImages(data.map((img: any) => img.url));
-                }
-            })
-            .catch(() => { /* use fallback */ });
+        dispatch(fetchGallery());
         
         // Handle animations
         const fadeEls = document.querySelectorAll('.fade-in-up');

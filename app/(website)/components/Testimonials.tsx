@@ -1,7 +1,8 @@
 "use client";
 import React, { useState, useEffect } from "react";
-
 import type { Testimonial } from "../../components/types";
+import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
+import { fetchTestimonials } from "@/lib/store/slices/testimonialsSlice";
 
 export default function Testimonials({ data, eyebrow, title, titleEm }: { 
   data?: Testimonial[];
@@ -9,16 +10,14 @@ export default function Testimonials({ data, eyebrow, title, titleEm }: {
   title?: string;
   titleEm?: string;
 }) {
-  const [dbData, setDbData] = useState<Testimonial[]>([]);
+  const dispatch = useAppDispatch();
+  const dbData = useAppSelector((state) => state.testimonials.testimonials);
   
   useEffect(() => {
-    if (!data) {
-      fetch("/api/testimonials")
-        .then(r => r.json())
-        .then(d => { if (Array.isArray(d)) setDbData(d); })
-        .catch(() => {});
+    if (!data && dbData.length === 0) {
+      dispatch(fetchTestimonials());
     }
-  }, [data]);
+  }, [data, dbData.length, dispatch]);
 
   const formatStayDate = (ds: string) => {
     if (!ds) return "";

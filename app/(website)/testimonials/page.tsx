@@ -1,12 +1,67 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import { Hotel } from "../../components/types";
+import React, { useEffect } from "react";
+import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
+import { fetchTestimonials } from "@/lib/store/slices/testimonialsSlice";
+import { fetchHotelSettings } from "@/lib/store/slices/hotelSlice";
+
+const DEFAULT_TESTIMONIALS = [
+    { 
+        name: "Aditi Sharma", 
+        text: "Hotel Luxora transcends the concept of a stay. It is an immersive cultural experience delivered through the lens of flawless modern hospitality.",
+        role: "Travel Editor",
+        location: "Delhi, India",
+        img: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=80",
+        rating: 5
+    },
+    { 
+        name: "James Whitmore", 
+        text: "The Presidential Suite felt like a private palace. From the moment our butler greeted us to the final handwritten farewell note, every interaction was orchestrated with exceptional care.",
+        role: "CEO, Meridian Capital",
+        location: "London, UK",
+        img: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=80",
+        rating: 5
+    },
+    { 
+        name: "Priya Nair", 
+        text: "As an architect who obsesses over space and proportion, walking into Hotel Luxora was like seeing all my ideals made tangible. The design is masterful.",
+        role: "Principal Architect",
+        location: "Mumbai, India",
+        img: "https://images.unsplash.com/photo-1494790108755-2616b12c4c66?w=80",
+        rating: 5
+    },
+    { 
+        name: "Vikram Mehta", 
+        text: "A sanctuary of quiet luxury. The staff doesn't just serve — they connect and anticipate. Each detail, from the thread count to the turndown ritual, was perfect.",
+        role: "Entrepreneur",
+        location: "Dubai, UAE",
+        img: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=80",
+        rating: 5
+    },
+    { 
+        name: "Anita Sharma", 
+        text: "The perfect fusion of Rajasthani heritage and global luxury. The evening courtyard ritual is something I'll remember for a long time.",
+        role: "Fashion Designer",
+        location: "Milan, Italy",
+        img: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=80",
+        rating: 5
+    },
+    { 
+        name: "Sandeep Kumar", 
+        text: "Unparalleled service in Jaipur. We've stayed in many properties, but Luxora has a level of personalized care that is rare to find.",
+        role: "Managing Director",
+        location: "Singapore",
+        img: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80",
+        rating: 5
+    }
+];
 
 export default function TestimonialsPage() {
-    const [hotel, setHotel] = useState<Hotel | null>(null);
+    const dispatch = useAppDispatch();
+    const dbTestimonials = useAppSelector((state) => state.testimonials.testimonials);
 
     useEffect(() => {
-        fetch("/api/hotel-settings").then(r => r.json()).then(d => { if (d.name) setHotel(d); }).catch(() => {});
+        dispatch(fetchTestimonials());
+        dispatch(fetchHotelSettings());
         
         // Handle animations
         const fadeEls = document.querySelectorAll('.fade-in-up');
@@ -20,58 +75,19 @@ export default function TestimonialsPage() {
         }, { threshold: 0.1 });
         fadeEls.forEach(el => observer.observe(el));
         return () => observer.disconnect();
-    }, []);
+    }, [dispatch]);
 
-    const testimonials = [
-        { 
-            name: "Aditi Sharma", 
-            text: "Hotel Luxora transcends the concept of a stay. It is an immersive cultural experience delivered through the lens of flawless modern hospitality.",
-            role: "Travel Editor",
-            location: "Delhi, India",
-            img: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=80",
-            rating: 5
-        },
-        { 
-            name: "James Whitmore", 
-            text: "The Presidential Suite felt like a private palace. From the moment our butler greeted us to the final handwritten farewell note, every interaction was orchestrated with exceptional care.",
-            role: "CEO, Meridian Capital",
-            location: "London, UK",
-            img: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=80",
-            rating: 5
-        },
-        { 
-            name: "Priya Nair", 
-            text: "As an architect who obsesses over space and proportion, walking into Hotel Luxora was like seeing all my ideals made tangible. The design is masterful.",
-            role: "Principal Architect",
-            location: "Mumbai, India",
-            img: "https://images.unsplash.com/photo-1494790108755-2616b12c4c66?w=80",
-            rating: 5
-        },
-        { 
-            name: "Vikram Mehta", 
-            text: "A sanctuary of quiet luxury. The staff doesn't just serve — they connect and anticipate. Each detail, from the thread count to the turndown ritual, was perfect.",
-            role: "Entrepreneur",
-            location: "Dubai, UAE",
-            img: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=80",
-            rating: 5
-        },
-        { 
-            name: "Anita Sharma", 
-            text: "The perfect fusion of Rajasthani heritage and global luxury. The evening courtyard ritual is something I'll remember for a long time.",
-            role: "Fashion Designer",
-            location: "Milan, Italy",
-            img: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=80",
-            rating: 5
-        },
-        { 
-            name: "Sandeep Kumar", 
-            text: "Unparalleled service in Jaipur. We've stayed in many properties, but Luxora has a level of personalized care that is rare to find.",
-            role: "Managing Director",
-            location: "Singapore",
-            img: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=80",
-            rating: 5
-        }
-    ];
+    const activeList = dbTestimonials.filter(t => t.isActive !== false);
+    const testimonials = activeList.length > 0
+        ? activeList.map(t => ({
+            name: t.name,
+            text: t.text,
+            role: t.stayDate ? `Stayed ${t.stayDate}` : "Verified Guest",
+            location: t.location || "Jaipur, India",
+            img: `https://ui-avatars.com/api/?name=${encodeURIComponent(t.name)}&background=d4a857&color=0a0a0a`,
+            rating: t.rating || 5,
+        }))
+        : DEFAULT_TESTIMONIALS;
 
     return (
         <div style={{ background: "var(--midnight)", minHeight: "100vh", paddingTop: 160, paddingBottom: 112 }}>

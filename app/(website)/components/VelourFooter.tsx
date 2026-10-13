@@ -3,12 +3,18 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { FiMapPin, FiPhone, FiMail, FiArrowRight } from "react-icons/fi";
 
+import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
+import { fetchHotelSettings } from "@/lib/store/slices/hotelSlice";
+
 export default function VelourFooter() {
-  const [hotel, setHotel] = useState<any>(null);
+  const dispatch = useAppDispatch();
+  const hotel = useAppSelector((state) => state.hotel.data);
 
   useEffect(() => {
-    fetch("/api/hotel-settings").then(r => r.json()).then(d => { if (d.name) setHotel(d); }).catch(() => { });
-  }, []);
+    if (!hotel) {
+      dispatch(fetchHotelSettings());
+    }
+  }, [dispatch, hotel]);
 
   return (
     <footer style={{ borderTop: "2px solid rgba(213,168,87,0.15)", background: "#01141A", paddingTop: "80px", paddingBottom: "30px", position: "relative", overflow: "hidden" }}>
@@ -77,7 +83,7 @@ export default function VelourFooter() {
                 <div style={{ width: "32px", height: "32px", borderRadius: "50%", background: "rgba(213,168,87,0.05)", border: "1px solid rgba(213,168,87,0.2)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                   <FiPhone style={{ color: "var(--gold)" }} size={14} />
                 </div>
-                <span>{hotel?.phone || '+91 63767 64803'}</span>
+                <span>{hotel?.contactNumber || hotel?.phone || '+91 63767 64803'}</span>
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: "14px", fontSize: "14px", color: "var(--ivory-dim)" }}>
                 <div style={{ width: "32px", height: "32px", borderRadius: "50%", background: "rgba(213,168,87,0.05)", border: "1px solid rgba(213,168,87,0.2)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
