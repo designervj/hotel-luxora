@@ -3,6 +3,9 @@ import React, { useState, useEffect, Suspense } from "react";
 import { Room, MealPlan } from "../../components/types";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
+import { fetchRooms } from "@/lib/store/slices/roomsSlice";
+import { fetchMealPlans, createBooking } from "@/lib/store/slices/bookingsSlice";
 
 // Responsive styles injected once
 const BOOK_STYLES = `
@@ -130,6 +133,10 @@ function BookingForm() {
     const searchParams = useSearchParams();
     const initialSlug = searchParams?.get("room") || "";
 
+    const dispatch = useAppDispatch();
+    const allRooms = useAppSelector((state) => state.rooms.rooms);
+    const reduxMealPlans = useAppSelector((state) => state.bookings.mealPlans);
+
     const [step, setStep] = useState<1 | 2 | 3>(1);
     
     const [checkIn, setCheckIn] = useState(searchParams?.get("checkIn") || dtIn);
@@ -155,22 +162,22 @@ function BookingForm() {
     };
 
     useEffect(() => {
-        if (initialSlug) {
-            fetch("/api/room-types")
-                .then(r => r.json())
-                .then((data: Room[]) => {
-                    const match = data.find(r => r.slug === initialSlug);
-                    if (match) {
-                        setPreSelectedRoom(match);
-                        setSelectedRoomId(match.id);
-                    }
-                })
-                .catch(() => {});
+        dispatch(fetchRooms());
+        dispatch(fetchMealPlans());
+    }, [dispatch]);
+
+    useEffect(() => {
+        if (initialSlug && allRooms.length > 0) {
+            const match = allRooms.find(r => r.slug === initialSlug);
+            if (match) {
+                setPreSelectedRoom(match);
+                setSelectedRoomId(match.id);
+            }
         }
-    }, [initialSlug]);
+    }, [initialSlug, allRooms]);
 
     const [selectedMealPlanId, setSelectedMealPlanId] = useState("");
-    const [mealPlans, setMealPlans] = useState<MealPlan[]>([]);
+    const mealPlans = reduxMealPlans.filter((m: MealPlan) => m.pricePerPersonPerNight >= 0);
     
     const [guestInfo, setGuestInfo] = useState({ firstName: "", lastName: "", email: "", phone: "", specialRequests: "" });
     const [submitting, setSubmitting] = useState(false);
@@ -178,8 +185,6 @@ function BookingForm() {
     const [refId, setRefId] = useState("");
 
     useEffect(() => {
-        fetch("/api/meal-plans").then(r => r.json()).then(d => { if(d.length) setMealPlans(d.filter((m: MealPlan) => m.pricePerPersonPerNight >= 0)); }).catch(() => {});
-        
         // Handle animations
         const fadeEls = document.querySelectorAll('.fade-in-up');
         const observer = new IntersectionObserver((entries) => {

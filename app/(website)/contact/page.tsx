@@ -1,6 +1,8 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { Hotel } from "../../components/types";
+import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
+import { fetchHotelSettings } from "@/lib/store/slices/hotelSlice";
 
 function ContactHero() {
     return (
@@ -28,14 +30,12 @@ function ContactHero() {
     );
 }
 export default function ContactPage() {
-    const [hotel, setHotel] = useState<Hotel | null>(null);
+    const dispatch = useAppDispatch();
+    const hotel = useAppSelector((state) => state.hotel.data);
     const [formSent, setFormSent] = useState(false);
 
     useEffect(() => {
-        fetch("/api/hotel-settings")
-            .then(r => r.json())
-            .then(d => { if (d.name) setHotel(d); })
-            .catch(() => {});
+        dispatch(fetchHotelSettings());
 
         // Handle animations
         const fadeEls = document.querySelectorAll('.fade-in-up');
@@ -49,7 +49,7 @@ export default function ContactPage() {
         }, { threshold: 0.1 });
         fadeEls.forEach(el => observer.observe(el));
         return () => observer.disconnect();
-    }, []);
+    }, [dispatch]);
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();

@@ -1,44 +1,28 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
+import { checkAuth } from "@/lib/store/slices/authSlice";
+import { fetchMyBookings } from "@/lib/store/slices/bookingsSlice";
 
 export default function MyBookingsPage() {
-    const [bookings, setBookings] = useState<any[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [user, setUser] = useState<any>(null);
+    const dispatch = useAppDispatch();
     const router = useRouter();
+    const { user, isAuthenticated, loading: authLoading } = useAppSelector((state) => state.auth);
+    const { myBookings: bookings, loading: bookingsLoading } = useAppSelector((state) => state.bookings);
 
     useEffect(() => {
-        // First check if user is logged in
-        fetch("/api/auth/me")
-            .then(res => res.json())
-            .then(data => {
-                if (!data.authenticated) {
-                    window.location.href = "/sign-in";
-                } else {
-                    setUser(data.user);
-                    fetchBookings();
-                }
-            })
-            .catch(() => {
+        dispatch(checkAuth()).then((res: any) => {
+            if (!res.payload) {
                 window.location.href = "/sign-in";
-            });
+            } else {
+                dispatch(fetchMyBookings());
+            }
+        });
+    }, [dispatch]);
 
-        const fetchBookings = () => {
-            fetch("/api/my-bookings")
-                .then(res => res.json())
-                .then(data => {
-                    if (Array.isArray(data)) {
-                        setBookings(data);
-                    }
-                    setLoading(false);
-                })
-                .catch(() => {
-                    setLoading(false);
-                });
-        };
-    }, []);
+    const loading = authLoading || bookingsLoading;
 
     const getStatusStyle = (status: string) => {
         switch (status?.toLowerCase()) {

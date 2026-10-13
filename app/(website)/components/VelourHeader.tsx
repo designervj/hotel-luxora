@@ -3,25 +3,30 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
+import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
+import { fetchHotelSettings } from "@/lib/store/slices/hotelSlice";
+import { checkAuth, logoutUser } from "@/lib/store/slices/authSlice";
+
 export default function VelourHeader() {
+    const dispatch = useAppDispatch();
+    const hotel = useAppSelector((state) => state.hotel.data);
+    const user = useAppSelector((state) => state.auth.user);
+
     const [scrolled, setScrolled] = useState(false);
     const [mobileOpen, setMobileOpen] = useState(false);
-    const [hotel, setHotel] = useState<any>(null);
-    const [user, setUser] = useState<any>(null);
     const [dropdownOpen, setDropdownOpen] = useState(false);
     const router = useRouter();
 
     useEffect(() => {
         const handleScroll = () => setScrolled(window.scrollY > 60);
         window.addEventListener("scroll", handleScroll);
-        fetch("/api/hotel-settings").then(r => r.json()).then(d => { if (d.name) setHotel(d); }).catch(() => {});
-        fetch("/api/auth/me").then(r => r.json()).then(d => { if (d.authenticated) setUser(d.user); }).catch(() => {});
+        dispatch(fetchHotelSettings());
+        dispatch(checkAuth());
         return () => window.removeEventListener("scroll", handleScroll);
-    }, []);
+    }, [dispatch]);
 
     const handleLogout = async () => {
-        await fetch("/api/auth/logout", { method: "POST" });
-        setUser(null);
+        await dispatch(logoutUser());
         setDropdownOpen(false);
     };
 
@@ -44,8 +49,8 @@ export default function VelourHeader() {
         { label: "Contact", href: "/contact" },
     ];
 
-    const phone = hotel?.phone || "+91 63767 64803";
-    const phoneTel = hotel?.phone || "+91 63767 64803";
+    const phone = hotel?.contactNumber || hotel?.phone || "+91 63767 64803";
+    const phoneTel = hotel?.contactNumber || hotel?.phone || "+91 63767 64803";
     const email = hotel?.email === "reservations@hotelluxora.com" ? "hello@hotelluxora.com" : (hotel?.email || "hello@hotelluxora.com");
 
     return (

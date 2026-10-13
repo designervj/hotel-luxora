@@ -2,6 +2,9 @@
 import React, { useEffect, useState } from "react";
 import Loading from "../components/Loading";
 import type { CMSPage, AboutSection, TextImageSection, QuoteSection } from "../../components/types";
+import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
+import { fetchPageBySlug } from "@/lib/store/slices/cmsSlice";
+import { fetchHotelSettings } from "@/lib/store/slices/hotelSlice";
 
 // ── Highlight helper ──────────────────────────────────────────────────────────
 
@@ -181,20 +184,19 @@ function AboutHero({ title, subtitle }: { title: string, subtitle: string }) {
 // ── Main Page ─────────────────────────────────────────────────────────────────
 
 export default function AboutPage() {
-    const [cmsData, setCmsData] = useState<CMSPage | null>(null);
-    const [loading, setLoading] = useState(true);
+    const dispatch = useAppDispatch();
+    const cmsData = useAppSelector((state) => state.cms.pagesBySlug["about"] || null);
+    const hotel = useAppSelector((state) => state.hotel.data);
+    const [isLoaded, setIsLoaded] = useState(false);
 
     useEffect(() => {
-        fetch("/api/pages?slug=about")
-            .then(r => r.ok ? r.json() : null)
-            .then(d => {
-                if (d && d.slug === "about") setCmsData(d);
-            })
-            .catch(() => {})
-            .finally(() => setLoading(false));
-    }, []);
+        Promise.all([
+            dispatch(fetchPageBySlug("about")),
+            dispatch(fetchHotelSettings())
+        ]).finally(() => setIsLoaded(true));
+    }, [dispatch]);
 
-    if (loading) return <Loading />;
+    if (!isLoaded && !cmsData) return <Loading />;
 
     const isUsing = cmsData?.isPublished && cmsData?.sections && cmsData.sections.length > 0;
     

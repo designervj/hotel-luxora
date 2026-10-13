@@ -4,6 +4,9 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { Room, AmenityCat } from "../../../components/types";
 import Loading from "../../components/Loading";
+import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
+import { fetchRooms } from "@/lib/store/slices/roomsSlice";
+import { fetchAmenities } from "@/lib/store/slices/amenitiesSlice";
 import { 
   FaWifi, FaBolt, FaSnowflake, FaConciergeBell, FaShower, FaTv, FaBed, FaUserFriends, FaRulerCombined, FaChevronLeft, FaChevronRight, FaHotTub 
 } from "react-icons/fa";
@@ -40,38 +43,24 @@ function RoomDetailContent() {
     const router = useRouter();
     const roomId = params?.id as string;
     
-    const [room, setRoom] = useState<Room | null>(null);
-    const [amenities, setAmenities] = useState<AmenityCat[]>([]);
-    const [loading, setLoading] = useState(true);
+    const dispatch = useAppDispatch();
+    const rooms = useAppSelector((state) => state.rooms.rooms);
+    const amenities = useAppSelector((state) => state.amenities.categories);
+    const roomsLoading = useAppSelector((state) => state.rooms.loading);
+
+    const [isLoaded, setIsLoaded] = useState(false);
     const [activeImg, setActiveImg] = useState(0);
 
-    useEffect(() => {
-        if (!roomId) return;
-        
-        const fetchData = async () => {
-            try {
-                const [rRes, aRes] = await Promise.all([
-                    fetch("/api/room-types"),
-                    fetch("/api/amenities")
-                ]);
-                
-                const rData: Room[] = await rRes.json();
-                const aData: AmenityCat[] = await aRes.json();
-                
-                const match = rData.find(r => r.id === roomId);
-                if (match) {
-                    setRoom(match);
-                }
-                setAmenities(aData);
-            } catch (err) {
-                console.error("Error fetching room details:", err);
-            } finally {
-                setLoading(false);
-            }
-        };
+    const room = rooms.find(r => r.id === roomId || r.slug === roomId) || null;
 
-        fetchData();
-    }, [roomId]);
+    useEffect(() => {
+        Promise.all([
+            dispatch(fetchRooms()),
+            dispatch(fetchAmenities())
+        ]).finally(() => setIsLoaded(true));
+    }, [dispatch]);
+
+    const loading = !isLoaded && roomsLoading && !room;
 
     useEffect(() => {
         if (loading) return;
