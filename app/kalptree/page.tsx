@@ -9,50 +9,69 @@ export const metadata: Metadata = {
 
 const features = [
   {
-    title: "Catalog & Inventory Management",
+    title: "Suites & Room Inventory",
     description:
-      "Organize products, manage stock counts, update pricing, and configure variants effortlessly.",
-    icon: "box",
+      "Manage luxury suites, track live room availability, configure seasonal tariffs, and oversee amenities effortlessly.",
+    icon: "bed",
   },
   {
-    title: "Order Tracking & Processing",
+    title: "Reservations & Guest Operations",
     description:
-      "Review customer purchases, fulfill shipments, and handle returns with real-time updates.",
-    icon: "cart",
+      "Monitor real-time bookings, streamline check-ins and check-outs, and fulfill guest concierge requests.",
+    icon: "calendar",
   },
   {
-    title: "Secure Access & Control",
-    description: "Protected administrator console with encrypted sessions and safety controls.",
+    title: "Kalp OS Security & Control",
+    description:
+      "Protected hospitality management console with role-based staff access, encrypted sessions, and multi-tenant security.",
     icon: "shield",
   },
 ];
 
 function Icon({ name }: { name: string }) {
-  if (name === "cart") {
+  if (name === "bed") {
     return (
       <svg viewBox="0 0 24 24" aria-hidden="true">
-        <circle cx="9" cy="20" r="1.5" />
-        <circle cx="17" cy="20" r="1.5" />
-        <path d="M3 4h2l2.2 10.4a2 2 0 0 0 2 1.6h7.9a2 2 0 0 0 1.9-1.4L21 8H7" />
+        <path d="M2 20v-8a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v8" />
+        <path d="M4 10V6a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v4" />
+        <path d="M12 4v6" />
+        <path d="M2 18h20" />
       </svg>
     );
   }
 
-  if (name === "box") {
+  if (name === "calendar") {
     return (
       <svg viewBox="0 0 24 24" aria-hidden="true">
-        <path d="m12 3 8 4.5v9L12 21l-8-4.5v-9L12 3Z" />
-        <path d="m4 7.5 8 4.5 8-4.5" />
-        <path d="M12 12v9" />
+        <rect width="18" height="18" x="3" y="4" rx="2" ry="2" />
+        <line x1="16" x2="16" y1="2" y2="6" />
+        <line x1="8" x2="8" y1="2" y2="6" />
+        <line x1="3" x2="21" y1="10" y2="10" />
+        <path d="m9 16 2 2 4-4" />
+      </svg>
+    );
+  }
+
+  if (name === "hotel") {
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M18 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2Z" />
+        <path d="m9 16 .35-.24a4.5 4.5 0 0 1 5.3 0L15 16" />
+        <path d="M8 7h.01" />
+        <path d="M16 7h.01" />
+        <path d="M12 7h.01" />
+        <path d="M12 11h.01" />
+        <path d="M16 11h.01" />
+        <path d="M8 11h.01" />
+        <path d="M10 22v-6.5h4V22" />
       </svg>
     );
   }
 
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true">
-      <path d="M12 3 5 6v5c0 4.6 2.9 8.8 7 10 4.1-1.2 7-5.4 7-10V6l-7-3Z" />
-      <path d="M12 8v5" />
-      <path d="M12 16h.01" />
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" />
+      <path d="m9 12 2 2 4-4" />
     </svg>
   );
 }
@@ -73,27 +92,27 @@ export default function KalptreeAdminLoginPage() {
           </div>
 
           <h1 id="admin-login-heading">Admin Login</h1>
-          <p className="login-copy">Enter your credentials to access the store administration dashboard.</p>
+          <p className="login-copy">Enter your credentials to access the Hotel Luxora administration console powered by Kalp OS.</p>
 
           <KalptreeLoginForm />
 
           <div className="login-links">
-            <Link href="/">← Back to Storefront</Link>
-            <Link href="/sign-in">Customer Login</Link>
+            <Link href="/">← Back to Hotel Website</Link>
+            <Link href="/sign-in">Guest Login</Link>
           </div>
         </div>
       </section>
 
-      <section className="info-side" aria-label="Store administration details">
+      <section className="info-side" aria-label="Hotel administration details">
         <div className="info-inner">
           <div className="section-pill">
-            <Icon name="shield" />
-            Store Administration
+            <Icon name="hotel" />
+            Hotel & Kalp Operations
           </div>
 
-          <h2>Manage Your Store with Complete Control</h2>
+          <h2>Manage Your Hotel with Complete Control</h2>
           <p className="info-copy">
-            Access your centralized operations dashboard to manage products, monitor orders, and track store performance.
+            Access your centralized Kalp operations dashboard to manage suites, monitor guest reservations, and track hotel performance.
           </p>
 
           <div className="feature-list">
@@ -113,6 +132,9 @@ export default function KalptreeAdminLoginPage() {
           <div className="portal-meta">
             <p>
               Portal: <strong>Hotel Luxora</strong>
+            </p>
+            <p>
+              Platform: <strong>Kalp OS Hospitality</strong>
             </p>
             <p>
               Access: <strong>Authorized Personnel</strong>
