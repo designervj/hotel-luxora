@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDatabase } from "@/app/utils/getDatabase";
+import { syncPageToKalpAdmin } from "@/lib/kalp-sync";
 
 export async function GET(req: NextRequest) {
     try {
@@ -67,6 +68,7 @@ export async function POST(req: NextRequest) {
         };
 
         const result = await db.collection("pages").insertOne(newPage);
+        syncPageToKalpAdmin(newPage).catch((err) => console.warn("Kalp sync error:", err));
         return NextResponse.json({ ...newPage, _id: result.insertedId }, { status: 201 });
     } catch (error) {
         console.error("POST /api/pages error:", error);
@@ -114,6 +116,7 @@ export async function PUT(req: NextRequest) {
             { $set: updateData },
             { upsert: true }
         );
+        syncPageToKalpAdmin(updateData).catch((err) => console.warn("Kalp sync error:", err));
 
         return NextResponse.json({ success: true, page: updateData });
     } catch (error) {

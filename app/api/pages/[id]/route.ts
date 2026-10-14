@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getDatabase } from "@/app/utils/getDatabase";
+import { syncPageToKalpAdmin } from "@/lib/kalp-sync";
 
 export async function GET(
     req: NextRequest,
@@ -42,6 +43,7 @@ export async function PUT(
         delete updateData._id; // Don't attempt to update MongoDB internal _id
 
         await db.collection("pages").updateOne({ id }, { $set: updateData });
+        syncPageToKalpAdmin(updateData).catch((err) => console.warn("Kalp sync error:", err));
 
         return NextResponse.json({ success: true, updated: updateData });
     } catch (error) {
