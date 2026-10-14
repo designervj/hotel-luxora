@@ -14,20 +14,189 @@ interface PageEditorProps {
   onCancel: () => void;
 }
 
+function getInitialString(val: any): string {
+  if (!val) return "";
+  if (typeof val === "string") return val;
+  return val.en || Object.values(val)[0] || "";
+}
+
+function normalizeContent(initialData?: Partial<CMSPage>): PageBlock[] {
+  if (initialData?.content && Array.isArray(initialData.content) && initialData.content.length > 0) {
+    return (initialData.content as any[]).map((item, idx) => {
+      // If it's already a standard PageBlock with layout & columns
+      if (item.layout && item.columns && Array.isArray(item.columns)) {
+        return item as PageBlock;
+      }
+      // If it's a KalpSection with content: { items, columns, adminTitle } or props.legacyEditor
+      const legacy = item.props?.legacyEditor;
+      if (legacy) {
+        return {
+          id: item.id || `sec_${idx}`,
+          type: item.type || "section",
+          layout: legacy.layout || item.variant || "grid-1",
+          adminTitle: item.content?.adminTitle || legacy.adminTitle || item.type,
+          content: legacy.content || item.content?.items || [],
+          columns: legacy.columns?.length ? legacy.columns : (item.content?.columns?.length ? item.content.columns : [legacy.content || item.content?.items || []])
+        };
+      }
+      if (item.content && typeof item.content === "object" && !Array.isArray(item.content)) {
+        const cols = item.content.columns && item.content.columns.length > 0
+          ? item.content.columns
+          : [item.content.items || []];
+        return {
+          id: item.id || `sec_${idx}`,
+          type: item.type || "section",
+          layout: item.variant || "grid-1",
+          adminTitle: item.content.adminTitle || item.type,
+          content: item.content.items || [],
+          columns: cols
+        };
+      }
+      if (item.columns && Array.isArray(item.columns)) {
+        return {
+          id: item.id || `sec_${idx}`,
+          type: item.type || "section",
+          layout: item.layout || "grid-1",
+          adminTitle: item.adminTitle || `Section ${idx + 1}`,
+          content: item.content || [],
+          columns: item.columns
+        };
+      }
+      return {
+        id: item.id || `sec_${idx}`,
+        type: item.type || "section",
+        layout: "grid-1",
+        adminTitle: item.adminTitle || `Section ${idx + 1}`,
+        content: Array.isArray(item.content) ? item.content : [],
+        columns: [Array.isArray(item.content) ? item.content : []]
+      };
+    });
+  }
+
+  // Auto-bridge from plain text content if present
+  if (typeof initialData?.content === "string" && initialData.content.trim() !== "") {
+    const rawText: string = initialData.content;
+    const paragraphs: string[] = rawText.split(/\n\n+/).filter(Boolean);
+    const secId = `sec_${Date.now()}`;
+    return [
+      {
+        id: secId,
+        type: "section",
+        layout: "grid-1",
+        adminTitle: "Main Content",
+        content: [],
+        columns: [
+          paragraphs.map((p: string, idx: number) => ({
+            id: `${secId}_p_${idx}`,
+            type: "paragraph",
+            text: p.trim()
+          }))
+        ]
+      }
+    ];
+  }
+
+  // Auto-bridge from legacy sections if content is empty (e.g. for home, about, or legal)
+  if (initialData?.sections && Array.isArray(initialData.sections) && initialData.sections.length > 0) {
+    return (initialData.sections as any[]).map((sec, idx) => {
+      const secId = sec.id || `sec_${idx}_${Date.now()}`;
+      if (sec.type === "legal-block") {
+        return {
+          id: secId,
+          type: "section",
+          layout: "grid-1",
+          adminTitle: sec.heading || "Legal Section",
+          content: [],
+          columns: [
+            [
+              { id: `${secId}_h3`, type: "heading", level: "h3", text: sec.heading || "" },
+              { id: `${secId}_p`, type: "paragraph", text: sec.description || "" }
+            ]
+          ]
+        };
+      }
+      if (sec.type === "hero") {
+        return {
+          id: secId,
+          type: "section",
+          layout: "grid-1",
+          adminTitle: "Hero Section",
+          content: [],
+          columns: [
+            [
+              { id: `${secId}_h1`, type: "heading", level: "h1", text: `${sec.title || ""} ${sec.titleEm || ""}`.trim() },
+              { id: `${secId}_sub`, type: "paragraph", text: sec.subtitle || "" },
+              { id: `${secId}_btn`, type: "button", label: sec.primaryButtonLabel || "Explore Rooms", link: sec.primaryButtonLink || "/book" },
+              ...(sec.images?.[0]?.url ? [{ id: `${secId}_img`, type: "image", url: sec.images[0].url, alt: "Hero Banner" }] : []),
+            ]
+          ]
+        };
+      }
+      if (sec.type === "text-image") {
+        return {
+          id: secId,
+          type: "section",
+          layout: "grid-2",
+          adminTitle: sec.heading || "Text & Image Section",
+          content: [],
+          columns: [
+            [
+              { id: `${secId}_h2`, type: "heading", level: "h2", text: sec.heading || "" },
+              { id: `${secId}_p`, type: "paragraph", text: sec.description || "" },
+            ],
+            [
+              ...((sec.image || sec.images?.[0]?.url) ? [{ id: `${secId}_img`, type: "image", url: sec.image || sec.images?.[0]?.url, alt: sec.heading || "Image" }] : [])
+            ]
+          ]
+        };
+      }
+      if (sec.type === "quote") {
+        return {
+          id: secId,
+          type: "section",
+          layout: "grid-1",
+          adminTitle: "Quote Section",
+          content: [],
+          columns: [
+            [
+              { id: `${secId}_eyebrow`, type: "heading", level: "h4", text: sec.eyebrow || "Our Philosophy" },
+              { id: `${secId}_quote`, type: "paragraph", text: sec.text || "" },
+            ]
+          ]
+        };
+      }
+      return {
+        id: secId,
+        type: "section",
+        layout: "grid-1",
+        adminTitle: sec.heading || `Section ${idx + 1}`,
+        content: [],
+        columns: [[]]
+      };
+    });
+  }
+  return [];
+}
+
 export const PageEditor: React.FC<PageEditorProps> = ({
   initialData,
   onSave,
   isLoading = false,
   onCancel
 }) => {
-  const [page, setPage] = useState<Partial<CMSPage>>({
-    title: initialData?.title || "",
+  const [page, setPage] = useState<any>({
+    title: getInitialString(initialData?.title),
     slug: initialData?.slug || "",
-    content: initialData?.content ? (typeof initialData.content === 'string' ? [] : initialData.content) : [],
-    metaTitle: initialData?.metaTitle || "",
-    metaDescription: initialData?.metaDescription || "",
-    isPublished: initialData?.isPublished || false,
-    id: initialData?.id
+    content: normalizeContent(initialData),
+    metaTitle: getInitialString(initialData?.metaTitle),
+    metaDescription: getInitialString(initialData?.metaDescription),
+    isPublished: initialData?.isPublished ?? false,
+    id: initialData?.id,
+    _id: (initialData as any)?._id,
+    currentRevisionId: initialData?.currentRevisionId,
+    publishedRevisionId: initialData?.publishedRevisionId,
+    headVersion: initialData?.headVersion || 1,
+    status: initialData?.status || (initialData?.isPublished ? "published" : "draft"),
   });
 
   const [activeTab, setActiveTab] = useState<"content" | "settings">("content");
@@ -77,7 +246,80 @@ export const PageEditor: React.FC<PageEditorProps> = ({
       alert("Please provide a title and slug for the page.");
       return;
     }
-    await onSave(page);
+
+    const now = new Date().toISOString();
+    const revId = `pagerev_${Math.random().toString(36).substring(2, 10)}${Date.now()}`;
+    const isPublished = Boolean(page.isPublished);
+
+    // Format content into Nestcraft / Kalp Studio schema
+    const formattedContent = (page.content as PageBlock[]).map((block, idx) => {
+      const existingKalp = (block as any).version === "1.0" ? (block as any) : null;
+      const secId = block.id || `sec-${idx + 1}`;
+      const secType = block.type?.includes(".")
+        ? block.type
+        : (block.type === "section" ? `nestcraft.section.${block.layout || "grid-1"}` : `nestcraft.${block.type}`);
+      const variant = block.layout || existingKalp?.variant || "grid-1";
+      const columns = block.columns || [block.content || []];
+      const flatItems = columns.flat();
+
+      return {
+        ...(existingKalp || {}),
+        id: secId,
+        type: secType,
+        version: "1.0",
+        enabled: (existingKalp?.enabled !== undefined) ? existingKalp.enabled : true,
+        variant,
+        content: {
+          items: flatItems,
+          columns,
+          adminTitle: block.adminTitle || ""
+        },
+        props: {
+          ...(existingKalp?.props || {}),
+          legacyEditor: {
+            id: secId,
+            type: block.type,
+            layout: block.layout || variant,
+            props: existingKalp?.props?.legacyEditor?.props || {},
+            content: block.content || flatItems,
+            columns
+          }
+        },
+        dataSource: existingKalp?.dataSource || { kind: "static" },
+        visibility: existingKalp?.visibility || {},
+        style: existingKalp?.style || {},
+        provenance: existingKalp?.provenance || {
+          origin: "kalp_admin_page_editor",
+          editor: "page-editor-v2-adapter"
+        }
+      };
+    });
+
+    const savedPage: Partial<CMSPage> = {
+      ...initialData,
+      id: page.id || initialData?.id || `pg_${Date.now()}`,
+      _id: (initialData as any)?._id || page.id || initialData?.id || `pg_${Date.now()}`,
+      slug: page.slug,
+      title: {
+        en: page.title || ""
+      },
+      content: formattedContent as any,
+      metaTitle: {
+        en: page.metaTitle || ""
+      },
+      metaDescription: {
+        en: page.metaDescription || ""
+      },
+      isPublished,
+      status: isPublished ? "published" : "draft",
+      currentRevisionId: revId,
+      publishedRevisionId: isPublished ? (initialData?.publishedRevisionId || revId) : initialData?.publishedRevisionId,
+      headVersion: ((initialData as any)?.headVersion || 0) + 1,
+      createdAt: initialData?.createdAt || now,
+      updatedAt: now
+    };
+
+    await onSave(savedPage);
   };
 
   return (
@@ -85,9 +327,9 @@ export const PageEditor: React.FC<PageEditorProps> = ({
       <div className="flex items-center justify-between border-b border-slate-200 pb-6">
         <div className="flex items-center gap-4">
           <button
-            className="btn btn-ghost"
-            style={{ borderRadius: "50%", padding: "10px" }}
+            className="h-10 w-10 rounded-full hover:bg-slate-100 flex items-center justify-center text-slate-700 transition-colors cursor-pointer"
             onClick={onCancel}
+            title="Back to pages"
           >
             <ArrowLeft size={20} />
           </button>
@@ -101,7 +343,7 @@ export const PageEditor: React.FC<PageEditorProps> = ({
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 mr-4 bg-slate-50 px-4 py-2 rounded-xl border border-slate-200">
+          <div className="flex items-center gap-2 mr-4 bg-slate-50 px-4 py-2 rounded-2xl border border-slate-200">
             <Toggle
               checked={page.isPublished!}
               onChange={(val) => setPage({ ...page, isPublished: val })}
@@ -112,6 +354,10 @@ export const PageEditor: React.FC<PageEditorProps> = ({
             variant="outline"
             style={{ borderRadius: "12px", border: "1px solid #e2e8f0", color: "#475569", fontWeight: "bold" }}
             disabled={isLoading}
+            onClick={() => {
+              const url = page.slug === "home" ? "/" : `/${page.slug}`;
+              window.open(url, "_blank");
+            }}
           >
             <Eye size={16} /> Preview
           </Btn>
@@ -125,15 +371,15 @@ export const PageEditor: React.FC<PageEditorProps> = ({
         </div>
       </div>
 
-      <div className="flex items-center gap-2 bg-slate-100 p-1.5 rounded-xl mb-4 w-fit">
+      <div className="grid w-full grid-cols-2 max-w-[400px] mb-8 bg-slate-100 p-1 rounded-2xl h-12">
         <button
-           className={`px-4 py-2 rounded-lg transition-all flex items-center gap-2 font-bold text-sm ${activeTab === 'content' ? 'bg-white shadow-sm text-slate-900' : 'text-slate-500 hover:text-slate-700'}`}
+           className={`rounded-xl flex items-center justify-center gap-2 font-bold text-sm transition-all cursor-pointer ${activeTab === 'content' ? 'bg-white shadow-sm text-slate-900' : 'text-slate-500 hover:text-slate-700'}`}
            onClick={() => setActiveTab('content')}
         >
           <Layout size={16} /> Content
         </button>
         <button
-           className={`px-4 py-2 rounded-lg transition-all flex items-center gap-2 font-bold text-sm ${activeTab === 'settings' ? 'bg-white shadow-sm text-slate-900' : 'text-slate-500 hover:text-slate-700'}`}
+           className={`rounded-xl flex items-center justify-center gap-2 font-bold text-sm transition-all cursor-pointer ${activeTab === 'settings' ? 'bg-white shadow-sm text-slate-900' : 'text-slate-500 hover:text-slate-700'}`}
            onClick={() => setActiveTab('settings')}
         >
           <Settings size={16} /> SEO & Settings

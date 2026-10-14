@@ -322,18 +322,53 @@ export interface QuoteSection {
 
 export type AboutSection = TextImageSection | QuoteSection;
 
+export interface MultilingualText {
+    en: string;
+    hi?: string;
+    [key: string]: string | undefined;
+}
+
+export interface KalpSection {
+    id: string;
+    type: string;
+    version?: string;
+    enabled?: boolean;
+    variant?: string;
+    content?: {
+        items?: any[];
+        columns?: any[][];
+        adminTitle?: string;
+    };
+    props?: Record<string, any>;
+    dataSource?: {
+        kind: string;
+        [key: string]: any;
+    };
+    visibility?: Record<string, any>;
+    style?: Record<string, any>;
+    provenance?: {
+        origin: string;
+        editor: string;
+    };
+}
+
 export interface CMSPage {
     id: string;
-    title: string;
+    _id?: string;
     slug: string;
+    title: string | MultilingualText;
     subtitle?: string;              // eyebrow / tagline (e.g. "Our Heritage")
     sections?: (AboutSection | LegalSection)[];      // used by About & Legal CMS
-    content: PageBlock[];
-    metaTitle?: string;
-    metaDescription?: string;
+    content: (PageBlock | KalpSection)[] | string;
+    metaTitle?: string | MultilingualText;
+    metaDescription?: string | MultilingualText;
     image?: string;
     isPublished: boolean;
-    createdAt: string;
+    status?: "published" | "draft" | "changed";
+    currentRevisionId?: string;
+    publishedRevisionId?: string;
+    headVersion?: number;
+    createdAt?: string;
     updatedAt: string;
     isTest?: boolean;
 }

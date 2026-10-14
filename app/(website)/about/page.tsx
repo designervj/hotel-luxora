@@ -239,7 +239,7 @@ export default function AboutPage() {
         ]
     };
 
-    const title = isUsing ? (cmsData!.title || "About Us") : defaultAboutData.title;
+    const title = isUsing ? (typeof cmsData!.title === "object" ? (cmsData!.title.en || "About Us") : (cmsData!.title || "About Us")) : defaultAboutData.title;
     const subtitle = isUsing ? (cmsData!.subtitle || "Our Heritage") : defaultAboutData.subtitle;
     const sections = isUsing ? (cmsData!.sections || []) as AboutSection[] : (defaultAboutData.sections as any[]);
 

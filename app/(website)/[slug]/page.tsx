@@ -9,6 +9,12 @@ interface PageProps {
     params: Promise<{ slug: string }>;
 }
 
+function getText(val: any, fallback: string = ""): string {
+    if (!val) return fallback;
+    if (typeof val === "string") return val;
+    return val.en || Object.values(val)[0] || fallback;
+}
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
     const { slug } = await params;
     const db = await getDatabase();
@@ -18,10 +24,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         return { title: "Page Not Found | Hotel Luxora" };
     }
 
-    const metaTitle = page.metaTitle || `${page.title} | Hotel Luxora`;
+    const titleStr = getText(page.title, "Hotel Luxora");
+    const metaTitleStr = getText(page.metaTitle);
+    const metaDescStr = getText(page.metaDescription);
+
+    const metaTitle = metaTitleStr || `${titleStr} | Hotel Luxora`;
     const metaDesc =
-        page.metaDescription ||
-        `Read about ${page.title} at Hotel Luxora – a premier luxury hotel.`;
+        metaDescStr ||
+        `Read about ${titleStr} at Hotel Luxora – a premier luxury hotel.`;
 
     return {
         title: metaTitle,
@@ -43,8 +53,9 @@ export default async function DynamicCMSPage({ params }: PageProps) {
         notFound();
     }
 
+    const titleStr = getText(page.title, "Hotel Luxora");
     // Detect if content contains HTML tags
-    const isHtml = /<[a-z][\s\S]*>/i.test(page.content || "");
+    const isHtml = typeof page.content === "string" && /<[a-z][\s\S]*>/i.test(page.content);
 
     return (
         <div
@@ -71,7 +82,7 @@ export default async function DynamicCMSPage({ params }: PageProps) {
                         className="section-title fade-in-up visible"
                         style={{ fontSize: "clamp(32px, 6vw, 52px)", marginBottom: 0 }}
                     >
-                        {page.title}
+                        {titleStr}
                     </h1>
                 </div>
 
