@@ -5,30 +5,31 @@ if (!process.env.MONGODB_URI) {
 }
 
 const uri = process.env.MONGODB_URI;
-const options = {};
-
-let client: MongoClient;
-let clientPromise: Promise<MongoClient>;
+const options = {
+  serverSelectionTimeoutMS: 10000,
+  connectTimeoutMS: 10000,
+  socketTimeoutMS: 45000,
+};
 
 declare global {
   var _mongoClientPromise: Promise<MongoClient> | undefined;
 }
 
-if (process.env.NODE_ENV === "development") {
+export function getClientPromise(): Promise<MongoClient> {
   if (!global._mongoClientPromise) {
-    client = new MongoClient(uri, options);
-    global._mongoClientPromise = client.connect();
+    const client = new MongoClient(uri, options);
+    global._mongoClientPromise = client.connect().catch((err) => {
+      global._mongoClientPromise = undefined;
+      throw err;
+    });
   }
-  clientPromise = global._mongoClientPromise;
-} else {
-  client = new MongoClient(uri, options);
-  clientPromise = client.connect();
+  return global._mongoClientPromise;
 }
 
-export { clientPromise };
+export const clientPromise: Promise<MongoClient> = getClientPromise();
 
 export async function getDatabase(): Promise<Db> {
-  const client = await clientPromise;
+  const client = await getClientPromise();
 
   if (!process.env.MONGODB_DB) {
     throw new Error("MONGODB_DB not defined in .env");
@@ -38,7 +39,7 @@ export async function getDatabase(): Promise<Db> {
 }
 
 export async function getTestDatabase(dbname: string): Promise<Db> {
-  const client = await clientPromise;
+  const client = await getClientPromise();
 
   if (!dbname) {
     throw new Error("No DB Name Found");
