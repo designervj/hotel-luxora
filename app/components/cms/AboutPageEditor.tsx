@@ -327,7 +327,8 @@ interface AboutPageEditorProps {
 }
 
 export default function AboutPageEditor({ initialData, onSave, onCancel }: AboutPageEditorProps) {
-    const [title, setTitle] = useState(initialData?.title || "A legacy of excellence");
+    const initTitle = typeof initialData?.title === "object" ? (initialData.title.en || "A legacy of excellence") : (initialData?.title || "A legacy of excellence");
+    const [title, setTitle] = useState<string>(initTitle);
     const [subtitle, setSubtitle] = useState(initialData?.subtitle || "Our Heritage");
     const [isPublished, setIsPublished] = useState(initialData?.isPublished ?? true);
     const [sections, setSections] = useState<AboutSection[]>(

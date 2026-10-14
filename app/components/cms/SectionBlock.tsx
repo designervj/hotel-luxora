@@ -35,7 +35,11 @@ export const SectionBlock: React.FC<SectionBlockProps> = ({
   isFirst,
   isLast,
 }) => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(() => {
+    const cols = section.columns || [section.content || []];
+    const count = cols.reduce((acc: number, col: any[]) => acc + (col?.length || 0), 0);
+    return count === 0;
+  });
 
   useEffect(() => {
     if (!section.columns || section.columns.length === 0) {

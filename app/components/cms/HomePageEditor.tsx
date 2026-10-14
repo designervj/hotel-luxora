@@ -546,8 +546,10 @@ interface HomePageEditorProps {
 }
 
 export default function HomePageEditor({ initialData, onSave, onCancel }: HomePageEditorProps) {
-    const [pageTitle, setPageTitle] = useState(initialData?.title || "Hotel Luxora — Premium Luxury Stay in Jaipur");
-    const [metaDescription, setMetaDescription] = useState(initialData?.metaDescription || "");
+    const initTitle = typeof initialData?.title === "object" ? (initialData.title.en || "Hotel Luxora — Premium Luxury Stay in Jaipur") : (initialData?.title || "Hotel Luxora — Premium Luxury Stay in Jaipur");
+    const initMeta = typeof initialData?.metaDescription === "object" ? (initialData.metaDescription.en || "") : (initialData?.metaDescription || "");
+    const [pageTitle, setPageTitle] = useState<string>(initTitle);
+    const [metaDescription, setMetaDescription] = useState<string>(initMeta);
     const [isPublished, setIsPublished] = useState(initialData?.isPublished ?? true);
     const [sections, setSections] = useState<HomeSection[]>(
         initialData?.sections && (initialData.sections as HomeSection[]).length > 0

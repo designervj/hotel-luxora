@@ -10,7 +10,8 @@ interface LegalPageEditorProps {
 }
 
 export default function LegalPageEditor({ initialData, onSave, onCancel }: LegalPageEditorProps) {
-    const [title, setTitle] = useState(initialData?.title || "");
+    const initTitle = typeof initialData?.title === "object" ? (initialData.title.en || "") : (initialData?.title || "");
+    const [title, setTitle] = useState<string>(initTitle);
     const [subtitle, setSubtitle] = useState(initialData?.subtitle || "");
     const [isPublished, setIsPublished] = useState(initialData?.isPublished ?? false);
     const [sections, setSections] = useState<LegalSection[]>(

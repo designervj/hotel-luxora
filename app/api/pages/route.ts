@@ -41,17 +41,27 @@ export async function POST(req: NextRequest) {
         }
 
         const now = new Date().toISOString();
+        const titleObj = typeof body.title === "object" ? body.title : { en: body.title || "" };
+        const metaTitleObj = typeof body.metaTitle === "object" ? body.metaTitle : { en: body.metaTitle || "" };
+        const metaDescObj = typeof body.metaDescription === "object" ? body.metaDescription : { en: body.metaDescription || "" };
+        const isPublished = Boolean(body.isPublished);
+        const revId = body.currentRevisionId || `pagerev_${Math.random().toString(36).substring(2, 10)}${Date.now()}`;
+
         const newPage = {
             id: body.id || `pg_${Date.now()}`,
-            title: body.title,
+            title: titleObj,
             slug: body.slug,
             subtitle: body.subtitle || "",
             sections: body.sections || [],
             content: body.content || [],
-            metaTitle: body.metaTitle || "",
-            metaDescription: body.metaDescription || "",
+            metaTitle: metaTitleObj,
+            metaDescription: metaDescObj,
             image: body.image || "",
-            isPublished: body.isPublished ?? false,
+            isPublished,
+            status: body.status || (isPublished ? "published" : "draft"),
+            currentRevisionId: revId,
+            publishedRevisionId: isPublished ? (body.publishedRevisionId || revId) : undefined,
+            headVersion: body.headVersion || 1,
             createdAt: body.createdAt || now,
             updatedAt: now,
         };
@@ -64,7 +74,7 @@ export async function POST(req: NextRequest) {
     }
 }
 
-// PUT /api/pages — upsert by slug (used by About Page editor)
+// PUT /api/pages — upsert by slug
 export async function PUT(req: NextRequest) {
     try {
         const body = await req.json();
@@ -75,18 +85,27 @@ export async function PUT(req: NextRequest) {
         }
 
         const now = new Date().toISOString();
+        const titleObj = typeof body.title === "object" ? body.title : { en: body.title || "" };
+        const metaTitleObj = typeof body.metaTitle === "object" ? body.metaTitle : { en: body.metaTitle || "" };
+        const metaDescObj = typeof body.metaDescription === "object" ? body.metaDescription : { en: body.metaDescription || "" };
+        const isPublished = Boolean(body.isPublished);
+        const revId = body.currentRevisionId || `pagerev_${Math.random().toString(36).substring(2, 10)}${Date.now()}`;
+
         const updateData = {
             id: body.id || `pg_${Date.now()}`,
-            title: body.title || "",
+            title: titleObj,
             slug: body.slug,
             subtitle: body.subtitle || "",
             sections: body.sections || [],
             content: body.content || [],
-            metaTitle: body.metaTitle || "",
-            metaDescription: body.metaDescription || "",
+            metaTitle: metaTitleObj,
+            metaDescription: metaDescObj,
             image: body.image || "",
-            isPublished: body.isPublished ?? false,
-            createdAt: body.createdAt || now,
+            isPublished,
+            status: body.status || (isPublished ? "published" : "draft"),
+            currentRevisionId: revId,
+            publishedRevisionId: isPublished ? (body.publishedRevisionId || revId) : undefined,
+            headVersion: (body.headVersion || 0) + 1,
             updatedAt: now,
         };
 
