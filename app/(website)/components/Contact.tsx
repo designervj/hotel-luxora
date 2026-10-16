@@ -3,15 +3,46 @@ import React, { useState, useEffect } from "react";
 
 export default function Contact() {
   const [formSent, setFormSent] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
   const [hotel, setHotel] = useState<any>(null);
+
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    checkIn: "",
+    checkOut: "",
+    guests: "",
+    message: "",
+  });
 
   useEffect(() => {
     fetch("/api/hotel-settings").then(r => r.json()).then(d => { if (d.name) setHotel(d); }).catch(() => {});
   }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setFormSent(true);
+    setSubmitting(true);
+    setErrorMsg("");
+
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+      if (res.ok) {
+        setFormSent(true);
+      } else {
+        const data = await res.json().catch(() => ({}));
+        setErrorMsg(data.error || "Failed to submit. Please try again.");
+      }
+    } catch {
+      setErrorMsg("An unexpected error occurred. Please try calling us directly.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -49,7 +80,11 @@ export default function Contact() {
               </div>
               <div>
                 <span className="contact-lbl">Direct Line</span>
-                <span className="contact-val">{hotel?.phone || '+91 63767 64803'}</span>
+                <span className="contact-val">
+                  <a href={`tel:${hotel?.phone || '+91 63767 64803'}`} style={{ color: "inherit", textDecoration: "none" }}>
+                    {hotel?.phone || '+91 63767 64803'}
+                  </a>
+                </span>
               </div>
             </div>
             <div className="contact-item fade-in-up visible">
@@ -61,7 +96,11 @@ export default function Contact() {
               </div>
               <div>
                 <span className="contact-lbl">Email</span>
-                <span className="contact-val">{hotel?.email === "reservations@hotelluxora.com" ? "hello@hotelluxora.com" : (hotel?.email || 'hello@hotelluxora.com')}</span>
+                <span className="contact-val">
+                  <a href={`mailto:${hotel?.email === "reservations@hotelluxora.com" ? "hello@hotelluxora.com" : (hotel?.email || 'hello@hotelluxora.com')}`} style={{ color: "inherit", textDecoration: "none" }}>
+                    {hotel?.email === "reservations@hotelluxora.com" ? "hello@hotelluxora.com" : (hotel?.email || 'hello@hotelluxora.com')}
+                  </a>
+                </span>
               </div>
             </div>
             <div className="contact-item fade-in-up visible">
@@ -98,29 +137,58 @@ export default function Contact() {
             {!formSent ? (
               <form id="contact-form" onSubmit={handleSubmit}>
                 <div className="form-row">
-                  <input className="form-input" type="text" placeholder="Full Name" required />
-                  <input className="form-input" type="email" placeholder="Email Address" required />
+                  <input
+                    className="form-input"
+                    type="text"
+                    placeholder="Full Name"
+                    required
+                    value={formData.name}
+                    onChange={e => setFormData({ ...formData, name: e.target.value })}
+                  />
+                  <input
+                    className="form-input"
+                    type="email"
+                    placeholder="Email Address"
+                    required
+                    value={formData.email}
+                    onChange={e => setFormData({ ...formData, email: e.target.value })}
+                  />
                 </div>
                 <input
                   className="form-input"
                   type="tel"
-                  placeholder="Phone Number"
+                  placeholder="Phone Number (+91 63767 64803)"
                   style={{ marginBottom: "12px", display: "block" }}
+                  value={formData.phone}
+                  onChange={e => setFormData({ ...formData, phone: e.target.value })}
                 />
                 <div className="form-row">
                   <div>
                     <label className="input-label">Check In</label>
-                    <input className="form-input" type="date" />
+                    <input
+                      className="form-input"
+                      type="date"
+                      value={formData.checkIn}
+                      onChange={e => setFormData({ ...formData, checkIn: e.target.value })}
+                    />
                   </div>
                   <div>
                     <label className="input-label">Check Out</label>
-                    <input className="form-input" type="date" />
+                    <input
+                      className="form-input"
+                      type="date"
+                      value={formData.checkOut}
+                      onChange={e => setFormData({ ...formData, checkOut: e.target.value })}
+                    />
                   </div>
                 </div>
-                <select className="form-select" style={{ marginBottom: "12px", display: "block" }} defaultValue="">
-                  <option value="" disabled>
-                    Number of Guests
-                  </option>
+                <select
+                  className="form-select"
+                  style={{ marginBottom: "12px", display: "block" }}
+                  value={formData.guests}
+                  onChange={e => setFormData({ ...formData, guests: e.target.value })}
+                >
+                  <option value="">Number of Guests</option>
                   {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(g => (
                     <option key={g} value={`${g} Guest${g > 1 ? 's' : ''}`}>{g} Guest{g > 1 ? 's' : ''}</option>
                   ))}
@@ -129,9 +197,18 @@ export default function Contact() {
                   className="form-textarea"
                   rows={4}
                   placeholder="Special requests or questions..."
+                  value={formData.message}
+                  onChange={e => setFormData({ ...formData, message: e.target.value })}
                 ></textarea>
-                <button type="submit" className="btn-submit">
-                  Send Enquiry
+
+                {errorMsg && (
+                  <div style={{ color: "#ff6b6b", fontSize: "13px", marginBottom: "12px" }}>
+                    {errorMsg}
+                  </div>
+                )}
+
+                <button type="submit" className="btn-submit" disabled={submitting}>
+                  {submitting ? "Sending..." : "Send Enquiry"}
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                     <line x1="22" y1="2" x2="11" y2="13" />
                     <polygon points="22,2 15,22 11,13 2,9" />

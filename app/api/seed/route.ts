@@ -49,8 +49,8 @@ const CUSTOMERS = [
 const ROOMS = [
     {
         id: "rm1",
-        roomName: "Deluxe King Room",
-        slug: "deluxe-king-room",
+        roomName: "Deluxe Room",
+        slug: "deluxe-room",
         roomCategory: "Deluxe",
         bedType: "King",
         maxOccupancy: 2,
@@ -64,11 +64,19 @@ const ROOMS = [
         entertainmentOptions: "Smart TV + Sound System",
         bathroomType: "Rain Shower + Tub",
         floorPreference: "Upper Floor",
-        basePrice: 35000,
-        extraBedPrice: 2500,
+        basePrice: 1500,
+        extraBedPrice: 1000,
         refundable: true,
         currency: "INR",
-        amenityIds: ["fb7", "fr6", "fr7", "fr10", "fs4"],
+        amenityIds: [
+            "fb1", "fb2", "fb3", "fb4", "fb5", "fb6", "fb7", "fb8", "fb9", "fb10",
+            "fr1", "fr4", "fr6", "fr7", "fr8", "fr9", "fr10",
+            "ff1", "ff3", "ff5",
+            "fw1", "fw2",
+            "fs1", "fs2", "fs3", "fs4",
+            "ft1", "ft2",
+            "fbz1", "fbz3"
+        ],
         images: [
             "https://images.unsplash.com/photo-1631049307264-da0ec9d70304?w=800",
             "https://images.unsplash.com/photo-1618773928121-c32242e63f39?w=800",
@@ -76,55 +84,44 @@ const ROOMS = [
     },
     {
         id: "rm2",
-        roomName: "Royal Suite",
-        slug: "royal-suite",
+        roomName: "Suite Room",
+        slug: "suite-room",
         roomCategory: "Suite",
-        bedType: "Super King",
-        maxOccupancy: 3,
-        roomSize: 120,
-        view: "Panoramic",
+        bedType: "King",
+        maxOccupancy: 4,
+        roomSize: 55,
+        view: "Panoramic View",
         smokingPolicy: "Non-Smoking",
         balconyAvailable: true,
         roomTheme: "Art Deco",
         soundproofingLevel: "Maximum",
         inRoomWorkspace: true,
-        entertainmentOptions: "Home Theatre",
+        entertainmentOptions: "Smart TV + Sound System",
         bathroomType: "Spa Bathroom",
         floorPreference: "Top Floor",
-        basePrice: 150000,
-        extraBedPrice: 0,
+        basePrice: 3000,
+        extraBedPrice: 1500,
         refundable: true,
         currency: "INR",
-        amenityIds: ["fw3", "fr2", "fr3", "fr5", "fr9", "fb7", "fs4"],
-        images: [
-            "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=800",
-            "https://images.unsplash.com/photo-1590490360182-c33d57733427?w=800",
+        amenityIds: [
+            "fb1", "fb2", "fb3", "fb4", "fb5", "fb6", "fb7", "fb8", "fb9", "fb10",
+            "fr1", "fr2", "fr3", "fr4", "fr5", "fr6", "fr7", "fr8", "fr9", "fr10",
+            "ff1", "ff2", "ff3", "ff4", "ff5",
+            "fw1", "fw2", "fw3", "fw4", "fw5",
+            "fs1", "fs2", "fs3", "fs4",
+            "ft1", "ft2", "ft3",
+            "fbz1", "fbz2", "fbz3", "fbz4"
         ],
-    },
-    {
-        id: "rm3",
-        roomName: "Twin Standard",
-        slug: "twin-standard",
-        roomCategory: "Standard",
-        bedType: "Twin",
-        maxOccupancy: 2,
-        roomSize: 28,
-        view: "Garden View",
-        smokingPolicy: "Non-Smoking",
-        balconyAvailable: false,
-        roomTheme: "Classic",
-        soundproofingLevel: "Standard",
-        inRoomWorkspace: false,
-        entertainmentOptions: "Smart TV",
-        bathroomType: "Walk-in Shower",
-        floorPreference: "Lower Floor",
-        basePrice: 18000,
-        extraBedPrice: 1500,
-        refundable: false,
-        currency: "INR",
-        amenityIds: ["fb7", "fr10"],
         images: [
-            "https://images.unsplash.com/photo-1611892440504-42a792e24d32?w=800",
+            "/suite-room/suite-room-img (5).jpeg",
+            "/suite-room/suite-room-img (1).jpeg",
+            "/suite-room/suite-room-img (2).jpeg",
+            "/suite-room/suite-room-img (3).jpeg",
+            "/suite-room/suite-room-img (4).jpeg",
+            "/suite-room/suite-room-img (6).jpeg",
+            "/suite-room/suite-room-img (7).jpeg",
+            "/suite-room/suite-room-img (8).jpeg",
+            "/suite-room/suite-room-img (9).jpeg",
         ],
     },
 ];
@@ -228,40 +225,26 @@ export async function GET() {
         const SUITE_FEATURES = ["Butler Service", "Private Terrace", "Panoramic View", "Connecting Door", "Extra King Bed"];
         const TWIN_FEATURES = ["Accessible", "Garden View", "Connecting Door", "Ground Floor", "Extra Quiet"];
         const ROOM_INVENTORY = [
-            // Deluxe King Rooms — Floor 1
+            // Deluxe Rooms — Floor 1
             ...["101", "102", "103", "104", "105"].map((n, i) => ({
-                id: `room_${n}`, roomNumber: n, roomTypeId: "rm1", roomTypeName: "Deluxe King Room",
+                id: `room_${n}`, roomNumber: n, roomTypeId: "rm1", roomTypeName: "Deluxe Room",
                 floor: 1, status: randomStatus(), isActive: true,
                 features: i % 3 === 0 ? [DELUXE_FEATURES[i % DELUXE_FEATURES.length]] : [],
                 notes: "", lastCleaned: addDays(NOW, -(i % 3)), createdAt: new Date().toISOString(),
             })),
-            // Deluxe King Rooms — Floor 2
+            // Deluxe Rooms — Floor 2
             ...["201", "202", "203"].map((n, i) => ({
-                id: `room_${n}`, roomNumber: n, roomTypeId: "rm1", roomTypeName: "Deluxe King Room",
+                id: `room_${n}`, roomNumber: n, roomTypeId: "rm1", roomTypeName: "Deluxe Room",
                 floor: 2, status: randomStatus(), isActive: true,
                 features: i === 1 ? ["Corner Room", "City View Premium"] : [],
                 notes: "", lastCleaned: addDays(NOW, -(i % 2)), createdAt: new Date().toISOString(),
             })),
-            // Twin Standard Rooms — Floor 3
-            ...["301", "302", "303", "304", "305"].map((n, i) => ({
-                id: `room_${n}`, roomNumber: n, roomTypeId: "rm3", roomTypeName: "Twin Standard",
-                floor: 3, status: randomStatus(), isActive: true,
-                features: i % 2 === 0 ? [TWIN_FEATURES[i % TWIN_FEATURES.length]] : [],
-                notes: "", lastCleaned: addDays(NOW, -(i % 3)), createdAt: new Date().toISOString(),
-            })),
-            // Twin Standard Rooms — Floor 4
-            ...["306", "307", "308", "309", "310"].map((n, i) => ({
-                id: `room_${n}`, roomNumber: n, roomTypeId: "rm3", roomTypeName: "Twin Standard",
-                floor: 4, status: randomStatus(), isActive: true,
-                features: n === "310" ? ["Accessible"] : [],
-                notes: "", lastCleaned: addDays(NOW, -(i % 2)), createdAt: new Date().toISOString(),
-            })),
-            // Royal Suites — Floor 5
+            // Suite Rooms — Floor 5
             ...["501", "502", "503"].map((n, i) => ({
-                id: `room_${n}`, roomNumber: n, roomTypeId: "rm2", roomTypeName: "Royal Suite",
+                id: `room_${n}`, roomNumber: n, roomTypeId: "rm2", roomTypeName: "Suite Room",
                 floor: 5, status: i === 0 ? "occupied" : randomStatus(), isActive: true,
-                features: [SUITE_FEATURES[i], SUITE_FEATURES[(i + 1) % SUITE_FEATURES.length]],
-                notes: n === "501" ? "VIP suite — dedicated butler" : "",
+                features: [SUITE_FEATURES[i % SUITE_FEATURES.length]],
+                notes: n === "501" ? "VIP suite" : "",
                 lastCleaned: addDays(NOW, -1), createdAt: new Date().toISOString(),
             })),
         ];

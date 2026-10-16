@@ -26,8 +26,8 @@ const DEFAULT_HOME_SECTIONS = [
         secondaryButtonLabel: "Our Story",
         secondaryButtonLink: "#about",
         images: [
-            { url: "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?q=80&w=2070&auto=format&fit=crop" },
-            { url: "https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=2070&auto=format&fit=crop" },
+            { url: "/suite-room/suite-room-img (5).jpeg" },
+            { url: "/suite-room/suite-room-img (1).jpeg" },
         ],
         stats: [
             { id: "s1", value: "24/7", label: "Guest Support" },

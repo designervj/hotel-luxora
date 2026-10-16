@@ -3,13 +3,45 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { Room, AmenityCat } from "../../components/types";
 import { 
-  FaWifi, FaBolt, FaSnowflake, FaConciergeBell, FaShower, FaTv, FaHotTub 
+  FaWifi, FaBolt, FaSnowflake, FaConciergeBell, FaShower, FaTv, FaHotTub, FaBed
 } from "react-icons/fa";
 import { 
   MdAir, MdElevator, MdCleaningServices, MdOutput, MdRestaurant, MdRoomService, MdKitchen 
 } from "react-icons/md";
 import { BiFridge } from "react-icons/bi";
 import { IoShieldCheckmarkOutline, IoWaterOutline } from "react-icons/io5";
+
+function getRoomBadges(room: any) {
+  const isSuite =
+    room?.roomName?.toLowerCase().includes("suite") ||
+    room?.roomCategory?.toLowerCase().includes("suite") ||
+    room?.id === "rm2";
+
+  if (isSuite) {
+    return [
+      { label: room?.view || "Panoramic View", icon: <MdAir /> },
+      { label: "High-Speed Wi-Fi", icon: <FaWifi /> },
+      { label: "Air Conditioning", icon: <FaSnowflake /> },
+      { label: "Smart TV", icon: <FaTv /> },
+      { label: "Mini Fridge", icon: <BiFridge /> },
+      { label: "Lounge Sofa", icon: <FaBed /> },
+      { label: "Hot Water Geyser", icon: <FaHotTub /> },
+      { label: "24/7 Room Service", icon: <MdRoomService /> },
+    ];
+  }
+
+  // Default / Deluxe Room
+  return [
+    { label: room?.view || "Street View", icon: <MdAir /> },
+    { label: "Free Wi-Fi", icon: <FaWifi /> },
+    { label: "Air Conditioning", icon: <FaSnowflake /> },
+    { label: "Smart TV", icon: <FaTv /> },
+    { label: "Hot Water Geyser", icon: <FaHotTub /> },
+    { label: "Daily Housekeeping", icon: <MdCleaningServices /> },
+    { label: "100% Power Backup", icon: <FaBolt /> },
+    { label: "24/7 Room Service", icon: <MdRoomService /> },
+  ];
+}
 
 const ICON_MAP: Record<string, React.ReactNode> = {
   "Room Service": <MdRoomService />,
@@ -136,9 +168,12 @@ export default function Rooms({ roomsData = [], amenitiesData = [] }: RoomsProps
                   </div>
                 </div>
                   <div className="tags">
-                    <span className="tag">City View</span>
-                    <span className="tag">Free Wi-Fi</span>
-                    <span className="tag">24hr Service</span>
+                    {getRoomBadges(rooms[0]).map((b, bIdx) => (
+                      <span key={bIdx} className="tag">
+                        <span className="tag-icon">{b.icon}</span>
+                        <span>{b.label}</span>
+                      </span>
+                    ))}
                   </div>
                 <Link href={`/room/${rooms[0]?.id}`} className="btn-room" style={{ textDecoration: 'none' }}>
                   View Details
@@ -188,7 +223,7 @@ export default function Rooms({ roomsData = [], amenitiesData = [] }: RoomsProps
                   </div>
                 </Link>
                 <div className="room-body">
-                  <div className="room-cat">{room.roomCategory}</div>
+                  <div className="room-cat">{room.roomCategory || (room.roomName?.toLowerCase().includes("suite") ? "Suite" : "Deluxe")}</div>
                   <Link href={`/room/${room?.id}`} className="room-name font-display" style={{ display: 'block', textDecoration: 'none' }}>
                     {room.roomName}
                   </Link>
@@ -197,7 +232,7 @@ export default function Rooms({ roomsData = [], amenitiesData = [] }: RoomsProps
                       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#C9A96E" strokeWidth="1.5">
                         <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
                       </svg>
-                      {room.roomSize} m²
+                      {room.roomSize || (room.roomName?.toLowerCase().includes("suite") ? 55 : 42)} m²
                     </div>
                     <div className="room-meta-dot"></div>
                     <div className="room-meta-item">
@@ -205,13 +240,16 @@ export default function Rooms({ roomsData = [], amenitiesData = [] }: RoomsProps
                         <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z" />
                         <polyline points="9,22 9,12 15,12 15,22" />
                       </svg>
-                      {room.bedType}
+                      {room.bedType || "King"}
                     </div>
                   </div>
                   <div className="tags">
-                    <span className="tag">City View</span>
-                    <span className="tag">Free Wi-Fi</span>
-                    <span className="tag">24hr Service</span>
+                    {getRoomBadges(room).map((b, bIdx) => (
+                      <span key={bIdx} className="tag">
+                        <span className="tag-icon">{b.icon}</span>
+                        <span>{b.label}</span>
+                      </span>
+                    ))}
                   </div>
                   <Link href={`/room/${room?.id}`} className="btn-room" style={{ textDecoration: 'none' }}>
                     View Details
@@ -227,7 +265,7 @@ export default function Rooms({ roomsData = [], amenitiesData = [] }: RoomsProps
         )}
       </div>
 
-      {!isSingleRoom && (
+      {!isSingleRoom && rooms.length > 2 && (
         <div
           style={{
             marginTop: "20px",
@@ -304,6 +342,50 @@ export default function Rooms({ roomsData = [], amenitiesData = [] }: RoomsProps
           line-height: 1.7;
           max-width: 500px;
           opacity: 0.6;
+        }
+
+        .room-body {
+          display: flex;
+          flex-direction: column;
+        }
+
+        .tags {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 6px;
+          margin-bottom: 20px;
+        }
+
+        .tag {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          font-size: 11px;
+          color: var(--ivory-dim);
+          letter-spacing: 0.03em;
+          background: rgba(255, 255, 255, 0.025);
+          border: 1px solid rgba(212, 168, 87, 0.18);
+          padding: 5px 9px;
+          border-radius: 2px;
+          white-space: nowrap;
+          transition: all 0.25s ease;
+        }
+
+        .tag:hover {
+          border-color: rgba(212, 168, 87, 0.45);
+          background: rgba(212, 168, 87, 0.06);
+          color: var(--ivory);
+        }
+
+        .tag-icon {
+          display: inline-flex;
+          align-items: center;
+          color: var(--gold);
+          font-size: 11px;
+        }
+
+        .btn-room {
+          margin-top: auto;
         }
 
         @media (max-width: 1024px) {

@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { ObjectId } from "mongodb";
 import { getDatabase } from "@/app/utils/getDatabase";
 import { getTestMode, withTestMode, attachTestMode } from "@/app/utils/testMode";
 
@@ -9,8 +10,11 @@ export async function GET(req: Request) {
     const db = await getDatabase();
     const query = withTestMode({}, isTest);
     const rooms = await db.collection("room_types").find(query).toArray();
-    // Strip MongoDB internal _id from results
-    const clean = rooms.map(({ _id, ...rest }) => rest);
+    // Ensure each room type always has a valid id
+    const clean = rooms.map(({ _id, ...rest }) => ({
+      id: rest.id || _id.toString(),
+      ...rest,
+    }));
     return NextResponse.json(clean);
   } catch (err) {
     console.error("API error fetching room types:", err);
@@ -71,8 +75,12 @@ export async function PUT(req: Request) {
     }
 
     const updateData = attachTestMode(data, isTest);
+    const filterQuery: any = ObjectId.isValid(id) && id.length === 24
+      ? { $or: [{ id }, { _id: new ObjectId(id) }] }
+      : { id };
+
     const result = await db.collection("room_types").updateOne(
-      withTestMode({ id }, isTest),
+      withTestMode(filterQuery, isTest),
       { $set: updateData }
     );
     if (result.matchedCount === 0) {
@@ -92,7 +100,11 @@ export async function DELETE(req: Request) {
     const id = searchParams.get("id");
     if (!id) return NextResponse.json({ error: "id required" }, { status: 400 });
     const db = await getDatabase();
-    const result = await db.collection("room_types").deleteOne(withTestMode({ id }, isTest));
+    const filterQuery: any = ObjectId.isValid(id) && id.length === 24
+      ? { $or: [{ id }, { _id: new ObjectId(id) }] }
+      : { id };
+
+    const result = await db.collection("room_types").deleteOne(withTestMode(filterQuery, isTest));
     if (result.deletedCount === 0) {
       return NextResponse.json({ error: "Room not found in current mode" }, { status: 404 });
     }

@@ -7,6 +7,7 @@ import { fetchNearbyPlaces } from "@/lib/store/slices/nearbySlice";
 interface Attraction {
     name: string;
     timing: string;
+    mapsUrl?: string;
 }
 
 interface Category {
@@ -20,52 +21,75 @@ const DEFAULT_CATEGORIES: Category[] = [
         id: "airport",
         title: "AIRPORT",
         items: [
-            { name: "Jaipur International Airport", timing: "20min" }
+            { name: "Jaipur International Airport", timing: "20min", mapsUrl: "https://maps.google.com/?q=Jaipur+International+Airport" }
         ]
     },
     {
         id: "landmark",
         title: "LANDMARK",
         items: [
-            { name: "D'Mart", timing: "3 min" },
-            { name: "Sitapura Industrial Area", timing: "3 min" },
-            { name: "Viva city mall", timing: "4 min" },
-            { name: "Capital Mall", timing: "5 min" },
-            { name: "Akshay Patra Temple", timing: "5 min" },
-            { name: "Jagatpura Railway Station", timing: "8 min" }
+            { name: "D'Mart", timing: "3 min", mapsUrl: "https://maps.google.com/?q=DMart+Sitapura+Jaipur" },
+            { name: "Sitapura Industrial Area", timing: "3 min", mapsUrl: "https://maps.google.com/?q=Sitapura+Industrial+Area+Jaipur" },
+            { name: "Viva city mall", timing: "4 min", mapsUrl: "https://maps.google.com/?q=Viva+City+Mall+Jaipur" },
+            { name: "Capital Mall", timing: "5 min", mapsUrl: "https://maps.google.com/?q=Capital+Mall+Jagatpura+Jaipur" },
+            { name: "Akshay Patra Temple", timing: "5 min", mapsUrl: "https://maps.google.com/?q=Akshay+Patra+Temple+Jaipur" },
+            { name: "Jagatpura Railway Station", timing: "8 min", mapsUrl: "https://maps.google.com/?q=Jagatpura+Railway+Station+Jaipur" }
         ]
     },
     {
         id: "schools",
         title: "School's & Colleges",
         items: [
-            { name: "JECRC University", timing: "5 min" },
-            { name: "Poornima University", timing: "5 min" },
-            { name: "VIT University", timing: "5 min" },
-            { name: "Gyan vihar University", timing: "4 min" },
-            { name: "Maharaja sawai bhawani Singh school", timing: "8 min" },
-            { name: "SRN International school", timing: "5 min" },
-            { name: "Jaishree Periwal Global school", timing: "5 min" },
-            { name: "Ryan International school", timing: "5 min" }
+            { name: "JECRC University", timing: "5 min", mapsUrl: "https://maps.google.com/?q=JECRC+University+Jaipur" },
+            { name: "Poornima University", timing: "5 min", mapsUrl: "https://maps.google.com/?q=Poornima+University+Jaipur" },
+            { name: "VIT University", timing: "5 min", mapsUrl: "https://maps.google.com/?q=VIT+University+Jaipur" },
+            { name: "Gyan vihar University", timing: "4 min", mapsUrl: "https://maps.google.com/?q=Suresh+Gyan+Vihar+University+Jaipur" },
+            { name: "Maharaja sawai bhawani Singh school", timing: "8 min", mapsUrl: "https://maps.google.com/?q=Maharaja+Sawai+Bhawani+Singh+School+Jaipur" },
+            { name: "SRN International school", timing: "5 min", mapsUrl: "https://maps.google.com/?q=SRN+International+School+Jaipur" },
+            { name: "Jaishree Periwal Global school", timing: "5 min", mapsUrl: "https://maps.google.com/?q=Jaishree+Periwal+Global+School+Jaipur" },
+            { name: "Ryan International school", timing: "5 min", mapsUrl: "https://maps.google.com/?q=Ryan+International+School+Jagatpura+Jaipur" }
         ]
     },
     {
         id: "hospitals",
         title: "Hospitals",
         items: [
-            { name: "Bombay hospital", timing: "3 min" },
-            { name: "Jeevan rekha hospital", timing: "4 min" },
-            { name: "Medical college hospital", timing: "5 min" },
-            { name: "Mahatma Gandhi hospital", timing: "5 min" },
-            { name: "Narayana multi speciality hospital", timing: "8 min" }
+            { name: "Bombay hospital", timing: "3 min", mapsUrl: "https://maps.google.com/?q=Bombay+Hospital+Jaipur" },
+            { name: "Jeevan rekha hospital", timing: "4 min", mapsUrl: "https://maps.google.com/?q=Jeevan+Rekha+Hospital+Jaipur" },
+            { name: "Medical college hospital", timing: "5 min", mapsUrl: "https://maps.google.com/?q=SMS+Medical+College+Hospital+Jaipur" },
+            { name: "Mahatma Gandhi hospital", timing: "5 min", mapsUrl: "https://maps.google.com/?q=Mahatma+Gandhi+Hospital+Jaipur" },
+            { name: "Narayana multi speciality hospital", timing: "8 min", mapsUrl: "https://maps.google.com/?q=Narayana+Multispeciality+Hospital+Jaipur" }
         ]
     }
 ];
+
+// Google Maps URL from lat/lng
+function mapsUrlFromCoords(lat?: number, lng?: number, name?: string): string {
+    if (lat && lng) return `https://maps.google.com/?q=${lat},${lng}`;
+    if (name) return `https://maps.google.com/?q=${encodeURIComponent(name + " Jaipur")}`;
+    return "https://maps.google.com/?q=Hotel+Luxora+Jaipur";
+}
+
+function embedUrlFromCoords(lat?: number, lng?: number): string {
+    const defLat = 26.7769, defLng = 75.8123;
+    const tLat = lat || defLat;
+    const tLng = lng || defLng;
+    return `https://maps.google.com/maps?q=${tLat},${tLng}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
+}
+
+interface SelectedPlace {
+    name: string;
+    lat?: number;
+    lng?: number;
+    mapsUrl?: string;
+    embedUrl: string;
+}
 
 export default function NearbyPage() {
     const dispatch = useAppDispatch();
     const dbPlaces = useAppSelector((state) => state.nearby.places);
     const [activeCategory, setActiveCategory] = useState<string>("featured");
+    const [selectedPlace, setSelectedPlace] = useState<SelectedPlace | null>(null);
 
     useEffect(() => {
         dispatch(fetchNearbyPlaces());
@@ -75,9 +99,12 @@ export default function NearbyPage() {
         ...(dbPlaces.length > 0 ? [{
             id: "featured",
             title: "HOTEL HIGHLIGHTS",
-            items: dbPlaces.map(p => ({
+            items: dbPlaces.map((p: any) => ({
                 name: p.name,
-                timing: p.distance || "Few mins"
+                timing: p.distance || "Few mins",
+                lat: p.lat,
+                lng: p.lng,
+                mapsUrl: mapsUrlFromCoords(p.lat, p.lng, p.name)
             }))
         }] : []),
         ...DEFAULT_CATEGORIES
@@ -192,7 +219,10 @@ export default function NearbyPage() {
                                             margin: 0,
                                             animation: "fadeIn 0.5s ease-out"
                                         }}>
-                                            {cat.items.map((item, idx) => (
+                                            {cat.items.map((item: any, idx: number) => {
+                                                const isSelected =
+                                                    selectedPlace?.name === item.name;
+                                                return (
                                                 <li key={idx} style={{ 
                                                     marginBottom: "14px", 
                                                     fontSize: "14px", 
@@ -209,12 +239,48 @@ export default function NearbyPage() {
                                                         opacity: 0.3, 
                                                         flexShrink: 0 
                                                     }} />
-                                                    <span>
-                                                        <strong style={{ fontWeight: 700 }}>{item.name}</strong>
-                                                        <span style={{ opacity: 0.7, marginLeft: "8px" }}>— {item.timing}</span>
+                                                    <span style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
+                                                        <button
+                                                            onClick={() => {
+                                                                const lat = item.lat;
+                                                                const lng = item.lng;
+                                                                setSelectedPlace({
+                                                                    name: item.name,
+                                                                    lat,
+                                                                    lng,
+                                                                    mapsUrl: item.mapsUrl,
+                                                                    embedUrl: embedUrlFromCoords(lat, lng)
+                                                                });
+                                                            }}
+                                                            style={{
+                                                                fontWeight: 700,
+                                                                color: isSelected ? "var(--gold)" : "inherit",
+                                                                background: "none",
+                                                                border: "none",
+                                                                padding: 0,
+                                                                cursor: "pointer",
+                                                                display: "inline-flex",
+                                                                alignItems: "center",
+                                                                gap: "5px",
+                                                                borderBottom: isSelected ? "1px solid var(--gold)" : "1px solid rgba(0,0,0,0.2)",
+                                                                paddingBottom: "1px",
+                                                                fontSize: "inherit",
+                                                                fontFamily: "inherit",
+                                                                letterSpacing: "inherit",
+                                                                transition: "all 0.2s",
+                                                            }}
+                                                        >
+                                                            {/* Map Pin SVG */}
+                                                            <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor" style={{ opacity: isSelected ? 1 : 0.4, flexShrink: 0 }}>
+                                                                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
+                                                            </svg>
+                                                            {item.name}
+                                                        </button>
+                                                        <span style={{ opacity: 0.7 }}>— {item.timing}</span>
                                                     </span>
                                                 </li>
-                                            ))}
+                                                );
+                                            })}
                                         </ul>
                                     )}
                                 </div>
@@ -232,7 +298,12 @@ export default function NearbyPage() {
                         border: "1px solid rgba(212,168,87,0.2)",
                         boxShadow: "0 20px 40px rgba(0,0,0,0.4)"
                     }}>
-                        <NearbyMap places={[]} />
+                        <NearbyMap
+                            places={dbPlaces}
+                            embedUrl={selectedPlace?.embedUrl}
+                            selectedPlaceName={selectedPlace?.name}
+                            selectedPlaceMapsUrl={selectedPlace?.mapsUrl}
+                        />
                     </div>
                 </div>
             </div>
