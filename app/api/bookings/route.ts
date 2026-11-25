@@ -153,8 +153,14 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: "Children count must be between 0 and 20." }, { status: 400 });
         }
 
-        const booking = attachTestMode(body, isTest);
+        const primaryProperty = await db.collection("hotel_properties").findOne({}, { projection: { _id: 1 } });
+        const booking = attachTestMode(
+            primaryProperty?._id ? { ...body, _property_id: String(primaryProperty._id) } : body,
+            isTest
+        );
+        const kalpBooking = { ...booking };
         const result = await db.collection("bookings").insertOne(booking);
+        await db.collection("kalp_hotel_bookings").insertOne(kalpBooking);
 
         // Notify Admin (Await for reliability)
         await sendAdminBookingNotification(body);
@@ -215,6 +221,7 @@ export async function PUT(req: Request) {
         // Always store INR
         const updateData = attachTestMode({ ...data, currency: "INR" }, isTest);
         await db.collection("bookings").updateOne({ id }, { $set: updateData });
+        await db.collection("kalp_hotel_bookings").updateOne({ id }, { $set: updateData });
 
         // Sync room status based on booking status
         if (updateData.roomNumber) {
@@ -271,6 +278,7 @@ export async function DELETE(req: Request) {
         }
 
         await db.collection("bookings").deleteOne({ id });
+        await db.collection("kalp_hotel_bookings").deleteOne({ id });
         return NextResponse.json({ success: true });
     } catch (err) {
         console.error("[DELETE /api/bookings]", err);
